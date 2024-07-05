@@ -1,0 +1,87 @@
+{% include 'includes/header.html' %}
+
+<div class="content">
+  <script src="./js/custom/view_member.js"></script>
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <h1>View Members</h1>
+      <div>
+        <input type="text" id="filterInput" class="form-control" placeholder="Search...">
+      </div>
+    </div>
+    <div class="table-responsive mt-3">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Member ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Address</th>
+            <th>Phone</th>
+            <th>Date of Birth</th>
+            <th>Gender</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="memberList"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      fetch("http://localhost:5000/cooperative/members")
+        .then((response) => response.json())
+        .then((data) => {
+          const memberList = document.getElementById("memberList");
+          data.forEach((member) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${member.id}</td>
+              <td>${member.fullname}</td>
+              <td>${member.email}</td>
+              <td>${member.address}</td>
+              <td>${member.phoneno}</td>
+              <td>${
+                member.dob ? new Date(member.dob).toLocaleDateString() : "N/A"
+              }</td>
+              <td>${member.gender}</td>
+              <td>
+                <a class='btn btn-primary'><i class='fa fa-pen'></i></a>
+                <a class='btn btn-danger'><i class='fa fa-trash'></i></a>
+                <a class='btn btn-info'><i class='fa fa-search'></i></a>
+              </td>
+            `;
+            memberList.appendChild(row);
+          });
+          addFilterFunctionality();
+        })
+        .catch((error) => console.error("Error fetching member data:", error));
+    });
+
+    function addFilterFunctionality() {
+      const filterInput = document.getElementById("filterInput");
+      filterInput.addEventListener("keyup", () => {
+        const filterValue = filterInput.value.toLowerCase();
+        const rows = document.querySelectorAll("#memberList tr");
+        rows.forEach((row) => {
+          const cells = row.getElementsByTagName("td");
+          let match = false;
+          for (let i = 0; i < cells.length - 1; i++) {
+            if (cells[i].innerText.toLowerCase().includes(filterValue)) {
+              match = true;
+              break;
+            }
+          }
+          if (match) {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
+          }
+        });
+      });
+    }
+  </script>
+</div>
+
+{% include 'includes/footer.html' %}

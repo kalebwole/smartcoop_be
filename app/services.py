@@ -83,3 +83,22 @@ def fetch_all_members():
     except Exception as e:
         print(f"Error fetching members: {e}")
         return {"error": "Error fetching members"}
+
+def delete_member(member_id):
+    # Mock implementation assuming current_app.db is properly configured
+    db = current_app.db
+    
+    # Check if member exists
+    check_query = "SELECT COUNT(*) FROM cooperative_members WHERE id = %s"
+    if db.read(check_query, (member_id,))[0]['COUNT(*)'] == 0:
+        return {"error": "Member not found."}
+
+    # Delete the member record
+    delete_query = "DELETE FROM cooperative_members WHERE id = %s"
+    
+    try:
+        db.delete(delete_query, (member_id,))
+        return {"message": "Member deleted successfully."}
+    except Exception as e:
+        print(f"Error deleting member: {e}")
+        return {"error": "Error deleting member"}

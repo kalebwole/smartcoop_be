@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>SmartCoop - Cooperative Society Management App</title>
+    <link rel="shortcut icon" href="logo1.png" type="image/x-icon" />
+    <!-- Bootstrap , fonts & icons  -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/bootstrap.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='fonts/icon-font/css/style.css') }}"
+    />
+    <!-- Font stylesheets -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='fonts/typography-font/typo.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='fonts/fontawesome-5/css/all.css') }}"
+    />
+    <!-- Plugin stylesheets  -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='plugins/aos/aos.min.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='plugins/fancybox/jquery.fancybox.min.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='plugins/nice-select/nice-select.min.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='plugins/slick/slick.min.css') }}"
+    />
+    <!-- Vendor stylesheets  -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='plugins/theme-mode-switcher/switcher-panel.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/main.css') }}"
+    />
+    <!-- Custom stylesheet -->
+  </head>
+
+  <body data-theme-mode-panel-active data-theme="light">
+    <div class="site-wrapper overflow-hidden">
+      <div id="loading">
+        <img src="{{ url_for('static', filename='image/logo1.png') }}" alt="" />
+      </div>
+      <!-- Clean The Code And Hop in -->
+      <!-- Header Area -->
+      <!-- Preloader -->
+      <!-- <div id="loading">
+    <div class="preloader">
+     <img src="./image/preloader-3.gif" alt="preloader">
+   </div>
+   </div>   -->
+      <!-- Header Area -->
+      <header
+        class="site-header site-header--menu-right menu-block-5 dynamic-sticky-bg mt-3 mt-lg-0 site-header--absolute site-header--sticky"
+      >
+        <div class="container">
+          <nav class="navbar site-navbar">
+            <!-- Brand Logo-->
+            <div class="brand-logo">
+              <a href="/home-marketing.html">
+                <!-- light version logo (logo must be black)-->
+                <img
+                  src="{{ url_for('static', filename='image/smartcoop.png') }}"
+                  alt=""
+                  style="width: 150px"
+                  class="light-version-logo"
+                />
+                <!-- Dark version logo (logo must be White)-->
+                <img
+                  src="{{ url_for('static', filename='image/smartcoop.png') }}"
+                  alt=""
+                  style="width: 150px"
+                  class="dark-version-logo"
+                />
+              </a>
+            </div>
+            <div class="menu-block-wrapper ms-4">
+              <div class="menu-overlay"></div>
+              <nav class="menu-block" id="append-menu-header">
+                <div class="mobile-menu-head">
+                  <div class="go-back">
+                    <i class="fa fa-angle-left"></i>
+                  </div>
+                  <div class="current-menu-title"></div>
+                  <div class="mobile-menu-close">&times;</div>
+                </div>
+                <ul class="site-menu-main">
+                  <li class="nav-item nav-item-has-children">
+                    <a href="#" class="nav-link-item">Home </a>
+                  </li>
+                  <li class="nav-item nav-item-has-children">
+                    <a href="#" class="nav-link-item">About Us </a>
+                  </li>
+                  <li class="nav-item nav-item-has-children">
+                    <a href="#" class="nav-link-item">Pricing </a>
+                  </li>
+                  <li class="nav-item nav-item-has-children">
+                    <a href="#" class="nav-link-item">Contact Us </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+            <div class="header-btn">
+              <a
+                class="btn btn btn-niagara btn--medium-4 h-45 rounded-50 text-white shadow--niagara-3 ms-auto ms-lg-4 d-none d-sm-flex"
+                href="sign-up"
+              >
+                Register
+              </a>
+            </div>
+            <!-- mobile menu trigger -->
+            <div class="mobile-menu-trigger">
+              <span></span>
+            </div>
+            <!--/.Mobile Menu Hamburger Ends-->
+          </nav>
+        </div>
+      </header>
+      <!-- navbar- -->
+      <!--/ .Header Area -->
+      <!-- Hero Area -->
+      <div class="welcome-area welcome-area--l8 position-relative">
+        <div class="container">
+          <div class="row align-items-center justify-content-center">
+            <!-- Welcome content Area -->
+            <div
+              class="col-xxl-6 col-lg-7 col-md-9 col-xs-11 order-2 order-lg-1"
+            >
+              <div class="welcome-content welcome-content--l8">
+                <h3
+                  class="welcome-content--l8__sub-title text-bittersweet"
+                  data-aos="fade-up"
+                  data-aos-duration="500"
+                  data-aos-once="true"
+                >
+                  Get Started
+                </h3>
+                <h1
+                  class="welcome-content--l8__title"
+                  data-aos="fade-up"
+                  data-aos-duration="500"
+                  data-aos-delay="300"
+                  data-aos-once="true"
+                >
+                  Manage Your Cooperative Society
+                  <br class="d-none d-xs-block d-lg-none d-xl-block" />All in
+                  One Place
+                </h1>
+                <p
+                  class="welcome-content--l8__descriptions"
+                  data-aos="fade-up"
+                  data-aos-duration="500"
+                  data-aos-delay="500"
+                  data-aos-once="true"
+                >
+                  SmartCoop helps you efficiently manage member information,
+                  financial obligations, and compliance requirements, making
+                  cooperative management seamless and effective.
+                </p>
+                <div class="welcome-btn-group--l8">
+                  <a
+                    class="btn btn--lg-2 btn-bittersweet me-3 text-white rounded-50 me-3 popup-btn"
+                    href="https://www.youtube.com/watch?v=LWZ7iytIA6k"
+                    data-aos="fade-up"
+                    data-aos-duration="500"
+                    data-aos-delay="700"
+                    data-aos-once="true"
+                    >Watch Video</a
+                  >
+                  <a
+                    class="btn btn--lg-2 btn-niagara rounded-50 me-3 text-white"
+                    href="#"
+                    data-aos="fade-up"
+                    data-aos-duration="500"
+                    data-aos-delay="900"
+                    data-aos-once="true"
+                    >Get Started</a
+                  >
+                </div>
+              </div>
+            </div>
+            <!--/ .Welcome Content Area -->
+            <!--/ .Welcome img Area -->
+            <div
+              class="col-xxl-6 col-lg-5 col-md-8 col-xs-10 order-1 order-lg-2"
+            >
+              <div class="hero-img d-flex align-items-end">
+                <div class="hero-l8-img-group d-flex align-items-end">
+                  <div class="hero-l8-img-group__1">
+                    <img
+                      class="w-100"
+                      src="{{ url_for('static', filename='image/home-7/hero-l8-1.png') }}"
+                      alt="SmartCoop App Interface 1"
+                    />
+                  </div>
+                  <div class="hero-l8-img-group__2">
+                    <img
+                      class="w-100"
+                      src="{{ url_for('static', filename='image/home-7/hero-l8-2.png') }}"
+                      alt="SmartCoop App Interface 2"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--/ .Welcome img Area -->
+          </div>
+        </div>
+      </div>
+
+      <!--/ .Hero Area -->
+      <!-- Services Area -->
+      <div class="service-area service-area--l8 bg-default">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-xl-8">
+              <!-- Section Title -->
+              <div class="section-title section-title--l8 text-center">
+                <h6
+                  class="section-title__sub-heading text-bittersweet"
+                  data-aos="fade-up"
+                  data-aos-duration="500"
+                  data-aos-once="true"
+                >
+                  Our Services
+                </h6>
+                <h2
+                  class="section-title__heading"
+                  data-aos="fade-up"
+                  data-aos-duration="500"
+                  data-aos-delay="300"
+                  data-aos-once="true"
+                >
+                  Provided Features
+                </h2>
+              </div>
+              <!--/ .Section Title -->
+            </div>
+          </div>
+          <div
+            class="row justify-content-center"
+            data-aos="fade-up"
+            data-aos-duration="500"
+            data-aos-delay="500"
+            data-aos-once="true"
+          >
+            <!-- Single Service -->
+            <div class="col-xl-3 col-lg-4 col-md-6 col-xs-8">
+              <div
+                class="card card--services-l6 text-center card-hover__bittersweet"
+              >
+                <div
+                  class="card--services-l6__icon bg-op1__bittersweet mx-auto"
+                >
+                  <i class="text-bittersweet fas fa-users"></i>
+                </div>
+                <h3 class="card--services-l6__heading">Member Management</h3>
+                <p class="card--services-l6__content">
+                  Easily manage member information, applications, and
+                  participation within your cooperative society.
+                </p>
+              </div>
+            </div>
+            <!--/ .Single Service -->
+            <!-- Single Service -->
+            <div class="col-xl-3 col-lg-4 col-md-6 col-xs-8">
+              <div
+                class="card card--services-l6 text-center card-hover__niagara"
+              >
+                <div class="card--services-l6__icon bg-op1__niagara mx-auto">
+                  <i class="text-niagara fas fa-hand-holding-usd"></i>
+                </div>
+                <h3 class="card--services-l6__heading">Financial Management</h3>
+                <p class="card--services-l6__content">
+                  Track financial contributions, manage loans, and distribute
+                  profits efficiently.
+                </p>
+              </div>
+            </div>
+            <!--/ .Single Service -->
+            <!-- Single Service -->
+            <div class="col-xl-3 col-lg-4 col-md-6 col-xs-8">
+              <div class="card card--services-l6 text-center card-hover__coral">
+                <div class="card--services-l6__icon bg-op1__coral mx-auto">
+                  <i class="text-coral fas fa-bullhorn"></i>
+                </div>
+                <h3 class="card--services-l6__heading">Communication Tools</h3>
+                <p class="card--services-l6__content">
+                  Facilitate communication through announcements, messaging, and
+                  event scheduling.
+                </p>
+              </div>
+            </div>
+            <!--/ .Single Service -->
+            <!-- Single Service -->
+            <div class="col-xl-3 col-lg-4 col-md-6 col-xs-8">
+              <div
+                class="card card--services-l6 text-center card-hover__lavender"
+              >
+                <div class="card--services-l6__icon bg-op1__lavender mx-auto">
+                  <i class="text-lavender fas fa-shield-alt"></i>
+                </div>
+                <h3 class="card--services-l6__heading">
+                  Compliance & Security
+                </h3>
+                <p class="card--services-l6__content">
+                  Ensure compliance with regulations and secure document
+                  storage.
+                </p>
+              </div>
+            </div>
+            <!--/ .Single Service -->
+          </div>
+        </div>
+      </div>
+
+      <!--/ .Services Area -->
+      <!-- About Us Area -->
+      <div
+        class="content-section content-section--8 bg-default-5 border-bottom border-default-color-3"
+      >
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-xl-6 col-lg-8 col-md-9 col-xs-10">
+              <!-- Section Title -->
+              <div
+                class="section-title section-title--l8 mt-4 mt-md-0 text-center"
+              >
+                <h6
+                  class="section-title__sub-heading text-bittersweet"
+                  data-aos="fade-up"
+                  data-aos-duration="500"
+                  data-aos-once="true"
+                >
+                  About SmartCoop
+                </h6>
+                <h2
+                  class="section-title__heading"
+                  data-aos="fade-up"
+                  data-aos-duration="500"
+                  data-aos-delay="300"
+                  data-aos-once="true"
+                >
+                  Efficient Management for Cooperative Societies
+                </h2>
+              </div>
+              <!--/ .Section Title -->
+            </div>
+          </div>
+          <div
+            class="row align-items-center justify-content-center"
+            data-aos="fade-up"
+            data-aos-duration="500"
+            data-aos-delay="300"
+            data-aos-once="true"
+          >
+            <div
+              class="col-xxl-3 col-lg-4 col-md-6 col-sm-8 col-xs-9 order-2 order-lg-1"
+            >
+              <div class="widget widget--about widgets-align-right">
+                <!-- Single Services -->
+                <div class="widgets widgets--about-l6 d-flex">
+                  <div class="widgets__icon">
+                    <i class="fa fa-users"></i>
+                  </div>
+                  <div class="widgets__content">
+                    <h5 class="widgets__title">Member Management</h5>
+                    <p class="widgets__text">
+                      Streamline the management of member information and
+                      participation.
+                    </p>
+                  </div>
+                </div>
+                <!--/ .Single Services -->
+                <!-- Single Services -->
+                <div class="widgets widgets--about-l6 d-flex">
+                  <div class="widgets__icon">
+                    <i class="fa fa-hand-holding-usd"></i>
+                  </div>
+                  <div class="widgets__content">
+                    <h5 class="widgets__title">Financial Tracking</h5>
+                    <p class="widgets__text">
+                      Keep accurate records of financial contributions, loans,
+                      and distributions.
+                    </p>
+                  </div>
+                </div>
+                <!--/ .Single Services -->
+                <!-- Single Services -->
+                <div class="widgets widgets--about-l6 d-flex">
+                  <div class="widgets__icon">
+                    <i class="fa fa-shield-alt"></i>
+                  </div>
+                  <div class="widgets__content">
+                    <h5 class="widgets__title">Compliance & Security</h5>
+                    <p class="widgets__text">
+                      Ensure regulatory compliance and secure data storage.
+                    </p>
+                  </div>
+                </div>
+                <!--/ .Single Services -->
+              </div>
+            </div>
+            <div
+              class="col-xxl-6 col-lg-4 col-md-8 col-xs-9 order-1 order-lg-2"
+              data-aos="fade-up"
+              data-aos-duration="500"
+              data-aos-delay="300"
+              data-aos-once="true"
+            >
+              <div class="content-img content-img--l7-group-img text-center">
+                <img
+                  class="w-100"
+                  src="{{ url_for('static', filename='image/home-7/about-mobile-img.png') }} "
+                  alt="SmartCoop Mobile Interface"
+                />
+                <div class="shape">
+                  <img
+                    src="{{ url_for('static', filename='image/home-7/green-shape.png') }}"
+                    alt="Decorative Shape"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              class="col-xxl-3 col-lg-4 col-md-6 col-sm-8 col-xs-9 order-3"
+              data-aos="fade-up"
+              data-aos-duration="500"
+              data-aos-delay="300"
+              data-aos-once="true"
+            >
+              <div class="widget widget--about">
+                <!-- Single Services -->
+                <div class="widgets widgets--about-l6 d-flex">
+                  <div class="widgets__icon">
+                    <i class="fa fa-bullhorn"></i>
+                  </div>
+                  <div class="widgets__content">
+                    <h5 class="widgets__title">Communication Tools</h5>
+                    <p class="widgets__text">
+                      Enhance member engagement with effective communication
+                      tools.
+                    </p>
+                  </div>
+                </div>
+                <!--/ .Single Services -->
+                <!-- Single Services -->
+                <div class="widgets widgets--about-l6 d-flex">
+                  <div class="widgets__icon">
+                    <i class="fa fa-chart-line"></i>
+                  </div>
+                  <div class="widgets__content">
+                    <h5 class="widgets__title">Analytics & Reports</h5>
+                    <p class="widgets__text">
+                      Generate insightful reports and analytics to aid
+                      decision-making.
+                    </p>
+                  </div>
+                </div>
+                <!--/ .Single Services -->
+                <!-- Single Services -->
+                <div class="widgets widgets--about-l6 d-flex">
+                  <div class="widgets__icon">
+                    <i class="fa fa-cogs"></i>
+                  </div>
+                  <div class="widgets__content">
+                    <h5 class="widgets__title">Customization</h5>
+                    <p class="widgets__text">
+                      Customize SmartCoop to fit your cooperative's unique
+                      needs.
+                    </p>
+                  </div>
+                </div>
+                <!--/ .Single Services -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--/ .About Us Area -->
+
+      <!-- Pricing Table Area -->
+      <div
+        class="table-section table-section--l6 table-section--l8 bg-default-5 border-bottom border-default-color-3"
+      >
+        <div class="container">
+          <div class="table-section-top">
+            <div
+              class="section-title section-title--l6 text-center"
+              data-aos="fade-top"
+              data-aos-duration="500"
+              data-aos-once="true"
+            >
+              <h6
+                class="section-title__sub-heading text-bittersweet mb-5"
+                data-aos="fade-up"
+                data-aos-duration="500"
+                data-aos-once="true"
+              >
+                Pricing Plans
+              </h6>
+              <h2
+                class="section-title__heading mb-4"
+                data-aos="fade-up"
+                data-aos-duration="500"
+                data-aos-delay="300"
+                data-aos-once="true"
+              >
+                SmartCoop Subscription Options
+              </h2>
+            </div>
+            <!-- toggle-btn -->
+            <div
+              class="pricing-btn d-flex align-items-center justify-content-center flex-wrap"
+              data-aos="fade-up"
+              data-aos-duration="500"
+              data-aos-delay="500"
+              data-aos-once="true"
+            >
+              <label class="mb-3 mb-lg-0">Monthly</label>
+              <div class="toggle-btn form-check form-switch">
+                <input
+                  class="form-check-input btn-toggle price-deck-trigger mb-2 mb-lg-0"
+                  type="checkbox"
+                  id="flexSwitchCheckDefault"
+                  data-pricing-trigger
+                  data-target="#table-price-value"
+                  checked
+                />
+              </div>
+              <label class="mb-3 mb-lg-0">Yearly</label>
+              <h3 class="badge bg-half-baked mb-3 mb-lg-0">SAVE 20%</h3>
+            </div>
+            <!-- toggle-btn end -->
+          </div>
+          <div
+            class="row justify-content-center"
+            id="table-price-value"
+            data-pricing-dynamic
+            data-value-active="monthly"
+          >
+            <!-- Single Table -->
+            <div
+              class="col-lg-4 col-md-6 col-sm-9 col-xs-10"
+              data-aos="fade-up"
+              data-aos-duration="500"
+              data-aos-once="true"
+            >
+              <div class="card card--table-single text-center">
+                <div class="table-top bg-niagara">
+                  <h5 class="table-top__title">Basic Plan</h5>
+                  <p
+                    class="table-top__text dynamic-value"
+                    data-active="Monthly package"
+                    data-monthly="Monthly package"
+                    data-yearly="Yearly package"
+                  ></p>
+                  <div class="card--price">
+                    <span class="card--price__currency align-self-start"
+                      >$</span
+                    >
+                    <h1
+                      class="card--price__price dynamic-value"
+                      data-active="10"
+                      data-monthly="10"
+                      data-yearly="8"
+                    ></h1>
+                    <span class="card--price__price-time">/ Month</span>
+                  </div>
+                </div>
+                <ul
+                  class="card--table-single__list list-unstyled list-checked list-checked--niagara"
+                >
+                  <li>Basic member management</li>
+                  <li>Financial tracking</li>
+                  <li>Email support</li>
+                  <li>Access to basic reports</li>
+                </ul>
+                <a
+                  class="btn btn-niagara shadow--niagara btn--lg-2 text-white"
+                  href="#"
+                  >Choose Plan</a
+                >
+              </div>
+            </div>
+            <!--/ .Single Table -->
+            <!-- Single Table -->
+            <div
+              class="col-lg-4 col-md-6 col-sm-9 col-xs-10"
+              data-aos="fade-up"
+              data-aos-duration="500"
+              data-aos-delay="300"
+              data-aos-once="true"
+            >
+              <div class="card card--table-single text-center">
+                <div class="table-top bg-bittersweet">
+                  <h5 class="table-top__title">Standard Plan</h5>
+                  <p
+                    class="table-top__text dynamic-value"
+                    data-active="Monthly package"
+                    data-monthly="Monthly package"
+                    data-yearly="Yearly package"
+                  ></p>
+                  <div class="card--price">
+                    <span class="card--price__currency align-self-start"
+                      >$</span
+                    >
+                    <h1
+                      class="card--price__price dynamic-value"
+                      data-active="20"
+                      data-monthly="20"
+                      data-yearly="16"
+                    ></h1>
+                    <span class="card--price__price-time">/ Month</span>
+                  </div>
+                </div>
+                <ul
+                  class="card--table-single__list list-unstyled list-checked list-checked--bittersweet"
+                >
+                  <li>All features of Basic Plan</li>
+                  <li>Advanced financial reports</li>
+                  <li>Priority email support</li>
+                  <li>Custom member roles</li>
+                </ul>
+                <a
+                  class="btn btn-bittersweet shadow--bittersweet btn--lg-2 text-white"
+                  href="#"
+                  >Choose Plan</a
+                >
+              </div>
+            </div>
+            <!--/ .Single Table -->
+            <!-- Single Table -->
+            <div
+              class="col-lg-4 col-md-6 col-sm-9 col-xs-10"
+              data-aos="fade-up"
+              data-aos-duration="500"
+              data-aos-delay="500"
+              data-aos-once="true"
+            >
+              <div class="card card--table-single text-center">
+                <div class="table-top bg-niagara">
+                  <h5 class="table-top__title">Premium Plan</h5>
+                  <p
+                    class="table-top__text dynamic-value"
+                    data-active="Monthly package"
+                    data-monthly="Monthly package"
+                    data-yearly="Yearly package"
+                  ></p>
+                  <div class="card--price">
+                    <span class="card--price__currency align-self-start"
+                      >$</span
+                    >
+                    <h1
+                      class="card--price__price dynamic-value"
+                      data-active="30"
+                      data-monthly="30"
+                      data-yearly="24"
+                    ></h1>
+                    <span class="card--price__price-time">/ Month</span>
+                  </div>
+                </div>
+                <ul
+                  class="card--table-single__list list-unstyled list-checked list-checked--niagara"
+                >
+                  <li>All features of Standard Plan</li>
+                  <li>Dedicated account manager</li>
+                  <li>24/7 live chat support</li>
+                  <li>Custom integrations and APIs</li>
+                </ul>
+                <a
+                  class="btn btn-niagara shadow--niagara btn--lg-2 text-white"
+                  href="#"
+                  >Choose Plan</a
+                >
+              </div>
+            </div>
+            <!--/ .Single Table -->
+          </div>
+        </div>
+      </div>
+
+      <!--/ .Pricing Table Area -->
+      <!-- Testimonial Area -->
+      <div class="testimonial-section testimonial-section--l8 bg-default-5">
+        <div class="container">
+          <div class="row align-items-center">
+            <div class="col-lg-8 col-xl-9 col-xxl-7">
+              <div
+                class="section-title section-title--l8 text-center text-lg-start"
+              >
+                <h6
+                  class="section-title__sub-heading text-bittersweet"
+                  data-aos="fade-up"
+                  data-aos-duration="500"
+                  data-aos-once="true"
+                >
+                  Testimonials
+                </h6>
+                <h2
+                  class="section-title__heading mb-0"
+                  data-aos="fade-up"
+                  data-aos-duration="500"
+                  data-aos-delay="300"
+                  data-aos-once="true"
+                >
+                  Don’t Just Take Our Word For It
+                </h2>
+              </div>
+            </div>
+            <div class="col-xxl-5 col-xl-3 col-lg-4 text-center text-lg-end">
+              <div class="testimonial-btn mb-6 mb-lg-0"></div>
+            </div>
+          </div>
+          <div
+            class="row justify-content-center testimonial-slider--l8"
+            data-aos="fade-up"
+            data-aos-duration="500"
+            data-aos-delay="500"
+            data-aos-once="true"
+          >
+            <div class="col-lg-4 col-md-12">
+              <div class="card card-testimonial--l4">
+                <div class="card-body">
+                  <div
+                    class="card-body__top d-flex align-items-center justify-content-between"
+                  >
+                    <div class="d-flex flex-wrap align-items-center">
+                      <div class="card-image">
+                        <img
+                          src="{{ url_for('static', filename='image/home-4/user-img-1.png') }}"
+                          alt="Charles Patterson"
+                        />
+                      </div>
+                      <div class="card-body__user mr-3">
+                        <h3 class="card-title">Charles Patterson</h3>
+                        <p class="card-text--ext">Farm Owner</p>
+                      </div>
+                    </div>
+                    <div class="card-icon">
+                      <i class="fa fa-quote-left"></i>
+                    </div>
+                  </div>
+                  <p class="card-description">
+                    "SmartCoop has revolutionized the way we manage our farm.
+                    The comprehensive tracking and support features are
+                    unmatched."
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+              <div class="card card-testimonial--l4">
+                <div class="card-body">
+                  <div
+                    class="card-body__top d-flex align-items-center justify-content-between"
+                  >
+                    <div class="d-flex flex-wrap align-items-center">
+                      <div class="card-image">
+                        <img
+                          src="{{ url_for('static', filename='image/home-3/user-circle-1.png') }}"
+                          alt="John Doe"
+                        />
+                      </div>
+                      <div class="card-body__user mr-3">
+                        <h3 class="card-title">John Doe</h3>
+                        <p class="card-text--ext">Poultry Farmer</p>
+                      </div>
+                    </div>
+                    <div class="card-icon">
+                      <i class="fa fa-quote-left"></i>
+                    </div>
+                  </div>
+                  <p class="card-description">
+                    "The data insights from SmartCoop have helped us improve our
+                    productivity and efficiency tremendously."
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+              <div class="card card-testimonial--l4">
+                <div class="card-body">
+                  <div
+                    class="card-body__top d-flex align-items-center justify-content-between"
+                  >
+                    <div class="d-flex flex-wrap align-items-center">
+                      <div class="card-image">
+                        <img
+                          src="{{ url_for('static', filename='image/home-3/user-circle-2.png') }}"
+                          alt="Tiana Dokidis"
+                        />
+                      </div>
+                      <div class="card-body__user mr-3">
+                        <h3 class="card-title">Tiana Dokidis</h3>
+                        <p class="card-text--ext">Agribusiness Consultant</p>
+                      </div>
+                    </div>
+                    <div class="card-icon">
+                      <i class="fa fa-quote-left"></i>
+                    </div>
+                  </div>
+                  <p class="card-description">
+                    "SmartCoop's user-friendly interface and detailed analytics
+                    are game-changers for any agribusiness."
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+              <div class="card card-testimonial--l4">
+                <div class="card-body">
+                  <div
+                    class="card-body__top d-flex align-items-center justify-content-between"
+                  >
+                    <div class="d-flex flex-wrap align-items-center">
+                      <div class="card-image">
+                        <img
+                          src="{{ url_for('static', filename='image/home-3/user-circle-3.png') }}"
+                          alt="Alice Johnson"
+                        />
+                      </div>
+                      <div class="card-body__user mr-3">
+                        <h3 class="card-title">Alice Johnson</h3>
+                        <p class="card-text--ext">Organic Farmer</p>
+                      </div>
+                    </div>
+                    <div class="card-icon">
+                      <i class="fa fa-quote-left"></i>
+                    </div>
+                  </div>
+                  <p class="card-description">
+                    "The support team at SmartCoop is fantastic. They are always
+                    ready to help with any questions or issues we have."
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+              <div class="card card-testimonial--l4">
+                <div class="card-body">
+                  <div
+                    class="card-body__top d-flex align-items-center justify-content-between"
+                  >
+                    <div class="d-flex flex-wrap align-items-center">
+                      <div class="card-image">
+                        <img
+                          src="{{ url_for('static', filename='image/home-3/user-circle-1.png') }}"
+                          alt="Talan Bergson"
+                        />
+                      </div>
+                      <div class="card-body__user mr-3">
+                        <h3 class="card-title">Talan Bergson</h3>
+                        <p class="card-text--ext">CEO, Greener</p>
+                      </div>
+                    </div>
+                    <div class="card-icon">
+                      <i class="fa fa-quote-left"></i>
+                    </div>
+                  </div>
+                  <p class="card-description">
+                    "Using SmartCoop has been a transformative experience for
+                    our company. The efficiency and accuracy it provides are
+                    invaluable."
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--/ .Testimonial Area -->
+      <!-- promo Area -->
+      <div class="promo-area promo-area--l8 bg-default">
+        <div class="container">
+          <div class="row justify-content-center justify-content-xl-end">
+            <div class="col-xxl-6 col-xl-5 col-lg-5 col-md-7 col-xs-9">
+              <div class="promo-image">
+                <img
+                  class="w-100"
+                  src="{{ url_for('static', filename='image/home-7/promo-l8-img.png') }}"
+                  alt=""
+                />
+              </div>
+            </div>
+            <div
+              class="col-xxl-6 col-xl-7 col-lg-8 col-md-10"
+              data-aos="fade-up"
+              data-aos-duration="800"
+              data-aos-once="true"
+            >
+              <div class="pormo--l8-content pormo--l8">
+                <div
+                  class="section-title section-title--l8 text-center text-md-start"
+                >
+                  <h6 class="section-title__sub-heading">Join our community</h6>
+                  <h2 class="section-title__heading">
+                    Get latest app updates right at your inbox
+                  </h2>
+                </div>
+                <!-- Newsletter -->
+                <div class="newsletter-form promo--l6-newsletter">
+                  <form action="/.">
+                    <div
+                      class="d-flex align-items-center justify-content-center flex-column flex-xs-row"
+                    >
+                      <input
+                        class="form-control border-0"
+                        type="email"
+                        placeholder="Enter your email"
+                        required
+                      />
+                      <button
+                        class="btn-niagara text-white btn btn--lg w-140 rounded-25 mr-3"
+                        type="submit"
+                      >
+                        Subscribe
+                      </button>
+                    </div>
+                  </form>
+                </div>
+                <!--/ .Newsletter -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--/ .promo Area -->
+      <!-- CTA Area -->
+      <div class="cta-area cta-area--l8 bg-default">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-xl-7 col-lg-10 col-md-11">
+              <div class="section-title section-title--l4 text-center">
+                <h2
+                  class="section-title__heading mb-4"
+                  data-aos="fade-up"
+                  data-aos-duration="500"
+                  data-aos-once="true"
+                >
+                  App Is Available For Free On Google Play & App Store
+                </h2>
+                <p
+                  class="section-title__description"
+                  data-aos="fade-up"
+                  data-aos-duration="500"
+                  data-aos-delay="300"
+                  data-aos-once="true"
+                >
+                  We’ll help you achieve your marketing & business goals
+                </p>
+                <div class="button-group">
+                  <a
+                    class="btn btn--lg btn-bittersweet shadow--bittersweet-2 text-white rounded-50 with-icon-2"
+                    href="#"
+                    data-aos="fade-up"
+                    data-aos-duration="500"
+                    data-aos-delay="500"
+                    data-aos-once="true"
+                    ><i class="fab fa-apple"></i>Apple Store</a
+                  >
+                  <a
+                    class="btn btn--lg btn-niagara shadow--niagara-2 text-white rounded-50 with-icon-2"
+                    href="#"
+                    data-aos="fade-up"
+                    data-aos-delay="700"
+                    data-aos-duration="500"
+                    data-aos-once="true"
+                    ><i class="fab fa-google-play"></i>Google Play</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--/ .CTA Area -->
+      <!-- Footer Area -->
+      <footer
+        class="footer-section footer-inner-2 position-relative bg-default pt-6"
+      >
+        <div class="container">
+          <div class="footer-top border-bottom border-default-color-3 pb-5">
+            <div class="row align-items-center justify-content-center">
+              <div class="col-6 col-xxs-4 col-lg-4 col-md-5 col-xs-4">
+                <div class="footer-brand-block footer-brand-block--l4 mb-md-0">
+                  <!-- Brand Logo-->
+                  <div
+                    class="brand-logo mb-0 text-center text-md-start mx-auto mx-md-0"
+                  >
+                    <a href="#">
+                      <!-- light version logo (logo must be black)-->
+                      <img
+                        src="image/png/logo-dark.png"
+                        alt=""
+                        class="light-version-logo"
+                      />
+                      <!-- Dark version logo (logo must be White)-->
+                      <img
+                        src="image/png/logo-white.png"
+                        alt=""
+                        class="dark-version-logo"
+                      />
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-8 col-md-7">
+                <div class="footer-menu text-center text-md-end">
+                  <ul class="list-unstyled">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Contact</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="copyright-block copyright-block--l3">
+            <div class="row text-center align-items-center">
+              <div class="col-xs-6 text-sm-start">
+                <p class="copyright-text--l3">
+                  © 2021 Fastland Web Ui Template
+                </p>
+              </div>
+              <div class="col-xs-6 text-sm-end">
+                <ul class="footer-social-share footer-social-share--rounded">
+                  <li>
+                    <a href="#">
+                      <i class="fab fa-facebook-square"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#">
+                      <i class="fab fa-twitter"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#">
+                      <i class="fab fa-instagram"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#">
+                      <i class="fab fa-linkedin"></i>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+      <!--/ .Footer Area -->
+    </div>
+    <!-- Plugin's Scripts -->
+    <script src="{{ url_for('static', filename='plugins/jquery/jquery.min.js') }}"></script>
+    <!-- Plugin scripts -->
+    <script src="{{ url_for('static', filename='plugins/jquery/jquery-migrate.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/fancybox/jquery.fancybox.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/nice-select/jquery.nice-select.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/aos/aos.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/counter-up/jquery.counterup.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/counter-up/waypoints.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/slick/slick.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/skill-bar/skill.bars.jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/isotope/isotope.pkgd.min.js') }}"></script>
+    <!--<script src="{{ url_for('static', filename='plugins/theme-mode-switcher/gr-theme-mode-switcher.js') }}"></script>-->
+    <!-- Activation Script -->
+    <script src="{{ url_for('static', filename='js/menu.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+  </body>
+</html>

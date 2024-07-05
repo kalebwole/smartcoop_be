@@ -1,11 +1,39 @@
-from flask import Blueprint, request, jsonify
-from .services import insert_cooperative, verify_credentials, create_member, fetch_all_members
+from flask import Blueprint, request, jsonify, render_template
+from .services import insert_cooperative, verify_credentials, create_member, fetch_all_members, delete_member
 
 main_bp = Blueprint('main', __name__)
 
-@main_bp.route('/hello', methods=['GET'])
+###################################################### 
+######################################################
+# VIEWS ROUTES
+###################################################### 
+######################################################
+
+@main_bp.route('/', methods=['GET'])
 def hello():
-    return jsonify(message="Hello")
+    return render_template('default.html')
+
+@main_bp.route('/sign-up', methods=['GET'])
+def signupView():
+    return render_template('signup.html')
+@main_bp.route('/sign-in', methods=['GET'])
+def signinView():
+    return render_template('signin.html')
+@main_bp.route('/dashboard', methods=['GET'])
+def dashboard():
+    return render_template('dashboard.html')
+@main_bp.route('/dashboard/add_member', methods=['GET'])
+def add_member():
+    return render_template('add_member.html')
+@main_bp.route('/dashboard/view_member', methods=['GET'])
+def view_member():
+    return render_template('view_member.html')
+
+###################################################### 
+######################################################
+# API ROUTES
+###################################################### 
+######################################################
 
 @main_bp.route('/cooperative/signup', methods=['POST'])
 def add_cooperative():
@@ -74,3 +102,8 @@ def get_all_members():
         return jsonify(members), 200
     else:
         return jsonify({"error": "Failed to fetch members"}), 500
+@main_bp.route('/cooperative/members', methods=['DELETE'])
+def deletemember():
+    data = request.get_json()
+    member_id = data.get('id')
+    
