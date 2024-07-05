@@ -10,7 +10,7 @@ def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 def insert_cooperative(cooperativename, email, password ):
-    # Check for duplicate cooperative name and email
+  
     db = current_app.db
     check_query = "SELECT COUNT(*) FROM cooperative WHERE cooperativename = %s OR email = %s"
     if db.read(check_query, (cooperativename, email))[0]['COUNT(*)'] > 0:
@@ -102,3 +102,67 @@ def delete_member(member_id):
     except Exception as e:
         print(f"Error deleting member: {e}")
         return {"error": "Error deleting member"}
+def create_loan_type(title,interest_rate,loan_type,availability,coop_id):
+    # Mock implementation assuming current_app.db is properly configured
+    db = current_app.db
+    
+    # Check if member already exists
+    check_query = "SELECT COUNT(*) FROM coop_loantypes WHERE coop_id = %s and title = %s"
+    if db.read(check_query, (coop_id,title,))[0]['COUNT(*)'] > 0:
+        return {"error": "Loan type already exists."}
+
+    # Create new member record
+    query = """
+    INSERT INTO coop_loantypes (title,interest_rate,loan_type,availability,coop_id )
+    VALUES (%s, %s, %s, %s, %s)
+    """
+    params = (title,interest_rate,loan_type,availability,coop_id)
+    
+    try:
+        db.create(query, params)
+        return {"message": "Loan Type Created created successfully."}
+    except Exception as e:
+        print(f"Error creating loan types: {e}")
+        return {"error": "Error creating member"}
+
+def delete_loan_type(id):
+    
+    db = current_app.db
+    
+    
+    check_query = "SELECT COUNT(*) FROM coop_loantypes WHERE id = %s "
+    if db.read(check_query, (id,))[0]['COUNT(*)'] == 0:
+        return {"error": "Loan type not found."}
+
+    # Delete the loan type record
+    delete_query = "DELETE FROM coop_loantypes WHERE id = %s"
+    print(delete_query)
+    try:
+        db.delete(delete_query, (id,))
+        return {"message": "Loan type deleted successfully."}
+    except Exception as e:
+        print(f"Error deleting loan type: {e}")
+        return {"error": "Error deleting loan type"}
+def fetch_loan_types(coop_id, page=1, per_page=10):
+     
+    db = current_app.db
+    
+    
+    offset = (page - 1) * per_page
+    
+    
+    query = """
+    SELECT * FROM coop_loantypes 
+    WHERE coop_id = %s
+    LIMIT %s OFFSET %s
+    """
+    
+    params = (coop_id, per_page, offset)
+    print(coop_id)  
+    try:
+        loan_types = db.read(query, params)
+        return loan_types
+    except Exception as e:
+        print(f"Error fetching loan types: {e}")
+        return []
+
