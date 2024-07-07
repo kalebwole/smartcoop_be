@@ -2,6 +2,8 @@ import random
 import string
 from flask import current_app
 import hashlib
+from datetime import datetime, timedelta
+from .loans import straight_line_loan_schedule, straight_line_upfront_loan_schedule, reducingBalance_loan_schedule
 # from .models import db, CooperativeMember, MemberCooperative
 def generate_coop_id():
     return ''.join(random.choices(string.hexdigits.lower(), k=10))
@@ -102,7 +104,7 @@ def delete_member(member_id):
     except Exception as e:
         print(f"Error deleting member: {e}")
         return {"error": "Error deleting member"}
-def create_loan_type(title,interest_rate,loan_type,availability,coop_id):
+def create_loan_type(title,interest_rate,loan_type,availability,coop_id,requiredAmount):
     # Mock implementation assuming current_app.db is properly configured
     db = current_app.db
     
@@ -113,10 +115,10 @@ def create_loan_type(title,interest_rate,loan_type,availability,coop_id):
 
     # Create new member record
     query = """
-    INSERT INTO coop_loantypes (title,interest_rate,loan_type,availability,coop_id )
-    VALUES (%s, %s, %s, %s, %s)
+    INSERT INTO coop_loantypes (title,interest_rate,loan_type,availability,coop_id,requiredAmount )
+    VALUES (%s, %s, %s, %s, %s,%s)
     """
-    params = (title,interest_rate,loan_type,availability,coop_id)
+    params = (title,interest_rate,loan_type,availability,coop_id,requiredAmount)
     
     try:
         db.create(query, params)
@@ -157,6 +159,112 @@ def fetch_loan_types(coop_id, page=1, per_page=10):
     LIMIT %s OFFSET %s
     """
     
+    params = (coop_id, per_page, offset,)
+    # print(coop_id)  
+    try:
+        loan_types = db.read(query, params)
+        return loan_types
+    except Exception as e:
+        print(f"Error fetching loan types: {e}")
+        return []
+
+def loanCalculator(loanType,principal,tenure):
+    db = current_app.db
+    
+    
+    # offset = (page - 1) * per_page
+    
+    
+    query = """
+    SELECT * FROM coop_loantypes 
+    WHERE id = %s
+    """
+    
+    params = (loanType,)
+    # print(loanType)  
+    try:
+        loan_types = db.read(query, params)
+        interest = loan_types[0]['interest_rate']
+        # print(loan_types[0]['loan_type'])
+        if loan_types[0]['loan_type']=='straigthLine':
+            calculateLoan = straight_line_loan_schedule(int(principal),int(tenure),int(interest))
+            return calculateLoan
+        elif loan_types[0]['loan_type']=='straigthLineUpfront':
+            calculateLoan = straight_line_upfront_loan_schedule(int(principal),int(tenure),int(interest))
+            return calculateLoan
+        elif loan_types[0]['loan_type']=='reducing':
+            calculateLoan = reducingBalance_loan_schedule(int(principal),int(tenure),int(interest))
+            return calculateLoan
+
+        
+    except Exception as e:
+        print(f"Error fetching loan types: {e}")
+        return []
+    
+def createLoan(staffId,coop_id,loanObject, loanType,LTObject):
+    db = current_app.db
+    try:
+        # print(LTObject)
+
+        principal =  0
+        tenure = len(loanObject)
+        total_interest = 0
+        monthly_interest = 0
+        monthly_repayment = 0
+        amount_disbursed = 0
+        amount_paid = 0
+        total_loan = 0
+        if(LTObject['loan_type']=='straigthLine'):
+            principal = loanObject[0]['amount_received']
+            total_interest = tenure * int(loanObject[1]['monthly_interest_repayment'])
+            monthly_interest = int(loanObject[1]['monthly_interest_repayment'])
+            amount_disbursed = int(loanObject[0]['amount_received'])
+            total_loan = total_interest + amount_disbursed
+            monthly_repayment = int(loanObject[1]['monthly_principal_repayment'])
+        elif LTObject['loan_type']=='straigthLineUpfront':
+            principal = loanObject[0]['remaining_principal']
+            total_interest = loanObject[0]['monthly_interest_repayment']
+            monthly_interest = loanObject[0]['monthly_interest_repayment'] / tenure
+            amount_disbursed = loanObject[0]['amount_received']
+            total_loan = loanObject[1]['remaining_principal']
+            monthly_repayment = loanObject[1]['monthly_principal_repayment']
+        elif LTObject['loan_type']=='reducing':
+            principal = loanObject[0]['remaining_principal']
+            total_interest = loanObject[1]['monthly_interest_repayment'] * tenure
+            monthly_interest = loanObject[1]['monthly_interest_repayment'] 
+            amount_disbursed = loanObject[0]['amount_received']
+            total_loan = loanObject[0]['remaining_principal']
+            monthly_repayment = loanObject[1]['monthly_principal_repayment']
+        #  `coop_id`, `staff_id`, `principal`, `tenure`, `loan_type`, `total_interest`, `monthly_interest`, `monthly_repayment`, `amount_disbursed`, `amount_paid`, `total_loan`, `approved_status`, `approved_date`, `request_date`, `status`SELECT * FROM `loan_application` WHERE 1
+        print(principal,total_interest,monthly_interest,amount_disbursed,total_loan)
+        query = """
+                INSERT INTO loan_application (loan_id,coop_id, staff_id, principal, tenure, loan_type, total_interest,monthly_interest,monthly_repayment, amount_disbursed,total_loan )
+                VALUES (%s,%s, %s, %s, %s,%s, %s, %s, %s , %s, %s)
+                """
+        random_number = random.randint(1000000000, 9999999999)
+        params = (random_number,coop_id, staffId, principal, tenure,LTObject['loan_type'],total_interest,monthly_interest, monthly_repayment,amount_disbursed,total_loan )
+        cooperative_id = db.create(query, params)
+        
+      
+        return 0    
+
+    except Exception as e:
+        print(f"Error fetching loan types: {e}")
+        return []
+def fetch_loans(coop_id, page=1, per_page=10):
+     
+    db = current_app.db
+    
+    
+    offset = (page - 1) * per_page
+    
+    
+    query = """
+    SELECT * FROM loan_application 
+    WHERE coop_id = %s
+    LIMIT %s OFFSET %s
+    """
+    
     params = (coop_id, per_page, offset)
     print(coop_id)  
     try:
@@ -166,3 +274,51 @@ def fetch_loan_types(coop_id, page=1, per_page=10):
         print(f"Error fetching loan types: {e}")
         return []
 
+ 
+def update_loans(loan_id, type,loanType,principal,tenure,staff_id,coop_id):
+    # print(type) 
+    db = current_app.db
+    current_date = datetime.now().date()
+    if(type=='approve'):
+    
+        query = """
+            UPDATE loan_application SET approved_status = 'approved', status = 'active',  approved_date = %s WHERE id = %s 
+        """
+        newLoan = loanCalculator(loanType,principal,tenure)
+        # print(newLoan)
+        createInstallment(newLoan,staff_id,coop_id,loan_id)
+    else:
+        query = """
+            UPDATE loan_application SET approved_status = 'rejected',  approved_date = %s WHERE id = %s 
+        """
+
+    
+    params = (current_date, loan_id,)
+    # print(coop_id)  
+    try:
+        loan_types = db.update(query, params)
+        
+        return loan_types
+    except Exception as e:
+        print(f"Error fetching loan types: {e}")
+        return []
+def createInstallment(loanObject,staff_id,coop_id,loan_id):
+    db = current_app.db
+    current_date = datetime.now().date()
+    try:
+        for each in loanObject:
+            current_date = current_date + timedelta(days=30)
+            query = """
+                    INSERT INTO loan_payment_history (loan_id,amount_to_pay,amount_paid,staff_id,coop_id,next_due) VALUES
+                    (%s,%s,%s,%s,%s,%s)
+                    """
+                
+            params = (loan_id, each['monthly_repayment'], 0, staff_id, coop_id,current_date)
+    
+            db.create(query, params)
+            # print(future_date)
+        return 0
+    except Exception as e:
+        return []
+
+ 

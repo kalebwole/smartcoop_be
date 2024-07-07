@@ -27,10 +27,12 @@
         <thead>
           <tr>
             <th>ID</th>
+            
             <th>Title</th>
             <th>Interest Rate</th>
             <th>Loan Type</th>
             <th>Availability</th>
+            <th>Required Amount <sup>%</sup></th>
             <th>Action</th>
           </tr>
         </thead>
@@ -87,7 +89,7 @@
               <select name="loan_type" id="" class="form-control">
                 <option value="straigthLine">Straight Line Method</option>
                 <option value="straigthLineUpfront">
-                  Straight Line Method
+                  Straight Line Upfront Method
                 </option>
                 <option value="reducing">Reducing Balance Method</option>
               </select>
@@ -99,6 +101,18 @@
                 <option value="members">Members Only</option>
                 <option value="guest">Guest Only</option>
               </select>
+            </div>
+            <div class="form-group">
+              <label for="loanTypeTitle"
+                >Required Amount in Wallet for Members</label
+              >
+              <input
+                type="number"
+                class="form-control"
+                id="requiredAmount"
+                name="requiredAmount"
+                required
+              />
             </div>
             <button type="submit" class="btn btn-primary">Save</button>
           </form>
@@ -181,6 +195,7 @@
             <td>${loanType.interest_rate}</td>
             <td>${loanType.loan_type}</td>
             <td>${loanType.availability}</td>
+            <td>${loanType.requiredAmount}</td>
             <td>
               <button class="btn btn-danger" onclick="deleteLoanType(${loanType.id})">
                 Delete
