@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, render_template, current_app
-from .services import insert_cooperative, verify_credentials, create_member, fetch_all_members, delete_member, create_loan_type,delete_loan_type,fetch_loan_types, loanCalculator,createLoan, fetch_loans,update_loans
+from .services import insert_cooperative, verify_credentials, create_member, fetch_all_members, delete_member, create_loan_type,delete_loan_type,fetch_loan_types, loanCalculator,createLoan, fetch_loans,update_loans, create_savings_type, fetch_savings_types, newSavings,fetch_savings,getProfiles
 
 main_bp = Blueprint('main', __name__)
 
@@ -31,12 +31,21 @@ def view_member():
 @main_bp.route('/dashboard/loan-type', methods=['GET'])
 def LoanTypes():
     return render_template('manage-loan-type.html')
+@main_bp.route('/dashboard/savings-type', methods=['GET'])
+def SavingTypes():
+    return render_template('manage-savings-type.html')
 @main_bp.route('/dashboard/all-loans', methods=['GET'])
 def allLoans():
     return render_template('all_loans.html')
 @main_bp.route('/dashboard/loan/calculator', methods=['GET'])
 def calc_ulator():
     return render_template('loanCalculator.html')
+@main_bp.route('/dashboard/contribution', methods=['GET'])
+def contribution():
+    return render_template('contribution.html')
+@main_bp.route('/dashboard/users/view/', methods=['GET'])
+def memberProfile():
+    return render_template('profile.html')
 
 ###################################################### 
 ######################################################
@@ -116,6 +125,7 @@ def get_all_members():
 def deletemember():
     data = request.get_json()
     member_id = data.get('id')
+
 @main_bp.route('/cooperative/loantype/create', methods=['POST'])
 def create_loanType():
     data = request.get_json()
@@ -135,7 +145,41 @@ def create_loanType():
         return jsonify(result), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@main_bp.route('/cooperative/savingstype/create', methods=['POST'])
+def create_savingsType():
+    data = request.get_json()
     
+    title = data.get('title')
+    auto = data.get('autotype')
+    coop_id = data.get('coop_id')
+    if not all([title,auto,coop_id]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        result = create_savings_type(title,auto,coop_id)
+        return jsonify(result), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@main_bp.route('/cooperative/savings/create', methods=['POST'])
+def create_savings():
+    data = request.get_json()
+    # coop_id,user_id,amount,savings_type,channel
+    user_id = data.get('user_id')
+    amount = data.get('amount')
+    savings_type = data.get('savings_type')
+    channel = data.get('channel')
+    coop_id = data.get('coop_id')
+    if not all([user_id,amount,savings_type,channel,coop_id]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        result =  newSavings(coop_id,user_id,amount,savings_type,channel)
+        return jsonify(result), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+                
 @main_bp.route('/cooperative/loantype', methods=['DELETE'])
 def delete_loanType():
     data = request.get_json()
@@ -167,7 +211,42 @@ def get_loanType():
         return jsonify(result), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@main_bp.route('/cooperative/savingstype', methods=['POST'])
+def get_savingsType():
+    data = request.get_json()
     
+    coop_id = data.get('coop_id')
+    page = data.get('page')
+    per_page = data.get('per_page')
+   
+    if not all([coop_id, page, per_page]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        result = fetch_savings_types(coop_id,page,per_page)
+        return jsonify(result), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@main_bp.route('/cooperative/savings', methods=['POST'])
+def get_savings():
+    data = request.get_json()
+    
+    coop_id = data.get('coop_id')
+    page = data.get('page')
+    per_page = data.get('per_page')
+   
+    if not all([coop_id, page, per_page]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        result = fetch_savings(coop_id,page,per_page)
+        return jsonify(result), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @main_bp.route('/cooperative/loan/calculator', methods=['POST'])
 def calculate_loan():
     data = request.get_json()
@@ -274,4 +353,17 @@ def approve_loans():
         return jsonify(result), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+@main_bp.route('/profile', methods=['POST'])
+def getProfile():
+    data = request.get_json()
     
+    staff_id = data.get('staff_id')
+    
+    if not all([]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        result = getProfiles(staff_id)
+        return jsonify(result), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

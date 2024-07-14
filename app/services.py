@@ -127,6 +127,27 @@ def create_loan_type(title,interest_rate,loan_type,availability,coop_id,required
         print(f"Error creating loan types: {e}")
         return {"error": "Error creating member"}
 
+def create_savings_type(title,auto,coop_id):
+    db = current_app.db
+    
+    # Check if member already exists
+    check_query = "SELECT COUNT(*) FROM coop_savingstypes WHERE coop_id = %s and title = %s"
+    if db.read(check_query, (coop_id,title,))[0]['COUNT(*)'] > 0:
+        return {"error": "Loan type already exists."}
+
+    # Create new member record
+    query = """
+    INSERT INTO coop_savingstypes (title,coop_id,auto_type)
+    VALUES (%s, %s, %s)
+    """
+    params = (title,coop_id,auto)
+    
+    try:
+        db.create(query, params)
+        return {"message": "Savings Type Created created successfully."}
+    except Exception as e:
+        print(f"Error creating savings types: {e}")
+        return {"error": "Error creating member"}
 def delete_loan_type(id):
     
     db = current_app.db
@@ -167,6 +188,30 @@ def fetch_loan_types(coop_id, page=1, per_page=10):
     except Exception as e:
         print(f"Error fetching loan types: {e}")
         return []
+
+def fetch_savings_types(coop_id, page=1, per_page=10):
+     
+    db = current_app.db
+    
+    
+    offset = (page - 1) * per_page
+    
+    
+    query = """
+    SELECT * FROM coop_savingstypes 
+    WHERE coop_id = %s
+    LIMIT %s OFFSET %s
+    """
+    
+    params = (coop_id, per_page, offset,)
+    # print(coop_id)  
+    try:
+        loan_types = db.read(query, params)
+        return loan_types
+    except Exception as e:
+        print(f"Error fetching loan types: {e}")
+        return []
+
 
 def loanCalculator(loanType,principal,tenure):
     db = current_app.db
@@ -319,6 +364,97 @@ def createInstallment(loanObject,staff_id,coop_id,loan_id):
             # print(future_date)
         return 0
     except Exception as e:
+        return []
+def fetch_savings(coop_id,page,per_page):
+    db = current_app.db
+    
+    
+    offset = (page - 1) * per_page
+    
+    
+    query = """
+    SELECT * FROM coop_savings
+    WHERE coop_id = %s
+    LIMIT %s OFFSET %s
+    """
+    
+    params = (coop_id, per_page, offset,)
+    # print(coop_id)  
+    try:
+        loan_types = db.read(query, params)
+        return loan_types
+    except Exception as e:
+        print(f"Error fetching loan types: {e}")
+        return []
+
+    
+def newSavings(coop_id,user_id,amount,savings_type,channel):
+    try:
+        db = current_app.db
+        query = """
+                INSERT INTO coop_savings (coop_id, user_id, amount, savings_type, channel)
+                VALUES (%s,%s, %s, %s, %s)
+                """
+        random_number = random.randint(1000000000, 9999999999)
+        params = (coop_id,user_id,amount,savings_type,channel, )
+        cooperative_id = db.create(query, params)
+        # add to the users wallet
+        getquery = """
+                SELECT * FROM cooperative_members where staff_id = %s
+                        """
+        getParams = (user_id,)
+        cooperative_id = db.read(getquery, getParams)
+        # print(int(cooperative_id[0]['wallet']) + float(amount))
+        walletUpdata  = int(cooperative_id[0]['wallet']) + float(amount)
+        queryUpdate = """
+                        UPDATE cooperative_members SET wallet = %s WHERE staff_id = %s
+                    """
+        paramsUpdate = (walletUpdata,user_id,)
+        updateUsers = db.update(queryUpdate,paramsUpdate)
+        return "Successful"
+    except Exception as e:
+        print(f"Error fetching loan types: {e}")
+        return []
+
+def getProfiles(user_id):
+     
+    db = current_app.db
+    
+    
+    # offset = (page - 1) * per_page
+    
+    
+    query = """
+    SELECT * FROM  cooperative_members
+    WHERE staff_id = %s
+    
+    """
+    
+    params = (user_id,)
+
+    querySavings = """
+        SELECT * FROM  coop_savings
+    WHERE user_id = %s
+        
+    """
+    paramSavings = (user_id,)
+
+    queryLoans = """
+        SELECT * FROM  loan_application
+    WHERE staff_id = %s
+        
+    """
+    paramLoans = (user_id,)
+    # print(coop_id)  
+    try:
+        userData = db.read(query, params)
+        savingsData = db.read(querySavings,paramSavings)
+        loansData = db.read(queryLoans,paramLoans)
+
+
+        return {"user":userData[0],"savings":savingsData,"loans":loansData}
+    except Exception as e:
+        print(f"Error fetching loan types: {e}")
         return []
 
  

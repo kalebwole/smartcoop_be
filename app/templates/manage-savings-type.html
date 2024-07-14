@@ -1,0 +1,221 @@
+{% include 'includes/header.html' %}
+
+<div class="content">
+  <script src="./js/custom/view_member.js"></script>
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <h1>Manage Savings Types</h1>
+      <div>
+        <input
+          type="text"
+          id="filterInput"
+          class="form-control"
+          placeholder="Search..."
+        />
+        <button
+          type="button"
+          class="btn btn-primary ml-2"
+          data-toggle="modal"
+          data-target="#addLoanTypeModal"
+        >
+          Add Savings Type
+        </button>
+      </div>
+    </div>
+    <div class="table-responsive mt-3">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+
+            <th>Title</th>
+            <th>Auto Type</th>
+
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="loanTypeList"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div
+    class="modal fade"
+    id="addLoanTypeModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="addLoanTypeModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addLoanTypeModalLabel">Add Loan Type</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="addLoanTypeForm">
+            <div class="form-group">
+              <label for="loanTypeTitle">Title</label>
+              <input
+                type="text"
+                class="form-control"
+                id="loanTypeTitle"
+                name="title"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="autotype">Debit Type</label>
+              <select name="autotype" id="" class="form-control">
+                <option value="auto">Auto Debit</option>
+                <option value="manual">Manual Payment</option>
+                >
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const coopId = "d50544f7ec";
+    const perPage = 10;
+    const page = 1;
+
+    fetchLoanTypes(coopId, perPage, page);
+
+    const form = document.getElementById("addLoanTypeForm");
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+
+      // Retrieve coop_id from localStorage
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user && user.user.coop_id) {
+        data.coop_id = user.user.coop_id;
+      } else {
+        console.error("Failed to retrieve coop_id from localStorage.");
+        return;
+      }
+
+      fetch("http://localhost:5000/cooperative/savingstype/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Success:", data);
+          // Close the modal
+          $("#addLoanTypeModal").modal("hide");
+          // Show success alert
+          showAlert("Loan type added successfully", "alert-success");
+          // Refresh the loan type list
+          fetchLoanTypes(coopId, perPage, page);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          showAlert(
+            "Failed to add loan type. Please try again.",
+            "alert-danger"
+          );
+        });
+    });
+  });
+
+  function fetchLoanTypes(coopId, perPage, page) {
+    fetch("http://localhost:5000/cooperative/savingstype", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ coop_id: coopId, per_page: perPage, page: page }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const loanTypeList = document.getElementById("loanTypeList");
+        loanTypeList.innerHTML = "";
+        data.forEach((loanType) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${loanType.id}</td>
+            <td>${loanType.title}</td>
+            <td>${loanType.auto_type}</td>
+      
+            <td>
+              <button class="btn btn-danger" onclick="deleteLoanType(${loanType.id})">
+                Delete
+              </button>
+            </td>
+          `;
+          loanTypeList.appendChild(row);
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching loan types:", error);
+      });
+  }
+
+  function deleteLoanType(id) {
+    fetch("http://localhost:5000/cooperative/loantype", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: id }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Success:", data);
+        // Show success alert
+        showAlert("Loan type deleted successfully", "alert-success");
+        // Refresh the loan type list
+        const coopId = "d50544f7ec"; // Use your actual coop_id
+        const perPage = 10;
+        const page = 1;
+        fetchLoanTypes(coopId, perPage, page);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        showAlert(
+          "Failed to delete loan type. Please try again.",
+          "alert-danger"
+        );
+      });
+  }
+
+  function showAlert(message, className) {
+    const alertDiv = document.createElement("div");
+    alertDiv.className = `alert ${className}`;
+    alertDiv.appendChild(document.createTextNode(message));
+
+    const container = document.querySelector(".container");
+    container.insertBefore(alertDiv, container.firstChild);
+
+    // Remove alert after 3 seconds
+    setTimeout(() => {
+      alertDiv.remove();
+    }, 3000);
+  }
+</script>
+{% include 'includes/footer.html' %}

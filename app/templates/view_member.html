@@ -6,7 +6,12 @@
     <div class="d-flex justify-content-between align-items-center">
       <h1>View Members</h1>
       <div>
-        <input type="text" id="filterInput" class="form-control" placeholder="Search...">
+        <input
+          type="text"
+          id="filterInput"
+          class="form-control"
+          placeholder="Search..."
+        />
       </div>
     </div>
     <div class="table-responsive mt-3">
@@ -49,7 +54,9 @@
               <td>
                 <a class='btn btn-primary'><i class='fa fa-pen'></i></a>
                 <a class='btn btn-danger'><i class='fa fa-trash'></i></a>
-                <a class='btn btn-info'><i class='fa fa-search'></i></a>
+                <a class='btn btn-info' href='users/view/?user=${
+                  member.staff_id
+                }'><i class='fa fa-search'></i></a>
               </td>
             `;
             memberList.appendChild(row);

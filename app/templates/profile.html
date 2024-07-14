@@ -1,0 +1,187 @@
+{% include 'includes/header.html' %}
+<style>
+  .profile {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  .profile-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 20px;
+  }
+  .profile-img img {
+    width: 100%;
+    height: auto;
+  }
+  .bio-data {
+    flex: 1;
+  }
+  .table-actions .btn {
+    margin: 0 2px;
+  }
+</style>
+<div class="content container mt-5">
+  <div class="profile">
+    <div class="profile-img">
+      <img
+        src="https://st2.depositphotos.com/2559749/11304/v/450/depositphotos_113040644-stock-illustration-flat-icon-isolate-on-white.jpg"
+        alt="Profile Picture"
+        id="profile-img"
+      />
+    </div>
+    <div class="bio-data">
+      <h4 id="fullname"></h4>
+      <p>Email: <span id="email"></span></p>
+      <p>Phone: <span id="phone"></span></p>
+      <p>Address: <span id="address"></span></p>
+      <p>Member Since: <span id="member-since"></span></p>
+    </div>
+  </div>
+
+  <h4>Savings History</h4>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Date Added</th>
+        <th>Amount</th>
+        <th>Channel</th>
+        <th>Savings Type</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="savings-history"></tbody>
+  </table>
+
+  <h4>Loan History</h4>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Request Date</th>
+        <th>Amount Disbursed</th>
+        <th>Amount Paid</th>
+        <th>Loan Type</th>
+        <th>Monthly Interest</th>
+        <th>Monthly Repayment</th>
+        <th>Principal</th>
+        <th>Status</th>
+        <th>Approved Date</th>
+        <th>Approved Status</th>
+        <th>Tenure</th>
+        <th>Total Interest</th>
+        <th>Total Loan</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="loan-history"></tbody>
+  </table>
+</div>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Get user_id from the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get("user");
+
+    // API endpoint
+    const apiEndpoint = "http://localhost:5000/profile";
+
+    // Fetch profile data
+    fetch(apiEndpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ staff_id: userId }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Update profile info
+        document.getElementById("profile-img").src =
+          data.user.photo ||
+          "https://st2.depositphotos.com/2559749/11304/v/450/depositphotos_113040644-stock-illustration-flat-icon-isolate-on-white.jpg";
+        document.getElementById("fullname").textContent = data.user.fullname;
+        document.getElementById("email").textContent = data.user.email;
+        document.getElementById("phone").textContent = data.user.phoneno;
+        document.getElementById("address").textContent = data.user.address;
+        document.getElementById("member-since").textContent = new Date(
+          data.user.dob
+        ).toLocaleDateString();
+
+        // Populate savings history
+        const savingsHistory = data.savings
+          .map(
+            (saving, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${new Date(saving.date_added).toLocaleDateString()}</td>
+                    <td>$${saving.amount}</td>
+                    <td>${saving.channel}</td>
+                    <td>${saving.savings_type}</td>
+                    <td class="table-actions">
+                        <button class="btn btn-primary btn-sm">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `
+          )
+          .join("");
+        document.getElementById("savings-history").innerHTML = savingsHistory;
+
+        // Populate loan history
+        const loanHistory = data.loans
+          .map(
+            (loan, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${new Date(loan.request_date).toLocaleDateString()}</td>
+                    <td>$${loan.amount_disbursed}</td>
+                    <td>$${loan.amount_paid}</td>
+                    <td>${loan.loan_type}</td>
+                    <td>$${loan.monthly_interest}</td>
+                    <td>$${loan.monthly_repayment}</td>
+                    <td>$${loan.principal}</td>
+                    <td>${loan.status}</td>
+                    <td>${
+                      loan.approved_date
+                        ? new Date(loan.approved_date).toLocaleDateString()
+                        : "N/A"
+                    }</td>
+                    <td>${loan.approved_status}</td>
+                    <td>${loan.tenure}</td>
+                    <td>$${loan.total_interest}</td>
+                    <td>$${loan.total_loan}</td>
+                    <td class="table-actions">
+                        <a></a>
+                        <button class="btn btn-primary btn-sm">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `
+          )
+          .join("");
+        document.getElementById("loan-history").innerHTML = loanHistory;
+      })
+      .catch((error) => {
+        console.error("Error fetching profile data:", error);
+      });
+  });
+</script>
+{% include 'includes/footer.html' %}
