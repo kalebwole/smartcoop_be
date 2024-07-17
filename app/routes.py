@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, render_template, current_app
-from .services import insert_cooperative, verify_credentials, create_member, fetch_all_members, delete_member, create_loan_type,delete_loan_type,fetch_loan_types, loanCalculator,createLoan, fetch_loans,update_loans, create_savings_type, fetch_savings_types, newSavings,fetch_savings,getProfiles
+from .services import fetchLoan,getCoopProfiles,insert_cooperative, verify_credentials, create_member, fetch_all_members, delete_member, create_loan_type,delete_loan_type,fetch_loan_types, loanCalculator,createLoan, fetch_loans,update_loans, create_savings_type, fetch_savings_types, newSavings,fetch_savings,getProfiles,updateCoopProfiles,fetchAllloans
 
 main_bp = Blueprint('main', __name__)
 
@@ -46,6 +46,13 @@ def contribution():
 @main_bp.route('/dashboard/users/view/', methods=['GET'])
 def memberProfile():
     return render_template('profile.html')
+
+@main_bp.route('/dashboard/coopsettings/', methods=['GET'])
+def coopsettings():
+    return render_template('coopsettings.html')
+@main_bp.route('/dashboard/loan-details/', methods=['GET'])
+def coophistory():
+    return render_template('loanhistory.html')
 
 ###################################################### 
 ######################################################
@@ -103,12 +110,20 @@ def create_cooperative_member():
     dob = data.get('dob')
     gender = data.get('gender')
     cooperative_id = data.get('cooperative_id')
+    nok_name = data.get('nok_name')
+    nok_phone = data.get('nok_phone')
+    nok_relationship = data.get('nok_relationship')
+    bank_name = data.get('bank_name')
+    account_number = data.get('account_number')
+    sort_code = data.get('sort_code')
+    salary_number = data.get('salary_number')
 
-    if not all([fullname, email, phoneno, address, staff_id, dob, gender, cooperative_id]):
+
+    if not all([fullname, email, phoneno, address, staff_id, dob, gender, cooperative_id, nok_name,nok_phone,nok_relationship,bank_name,account_number,sort_code,salary_number]):
         return jsonify({"error": "Missing required fields"}), 400
 
     try:
-        result = create_member(fullname, email, phoneno, address, staff_id, dob, gender, cooperative_id)
+        result = create_member(fullname, email, phoneno, address, staff_id, dob, gender, cooperative_id,nok_name,nok_phone,nok_relationship,bank_name,account_number,sort_code,salary_number)
         return jsonify(result), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -336,12 +351,17 @@ def approve_loans():
     
     loan_id = data.get('loan_id')
     type = data.get('type')
-    loanType = data.get('loanType')
-    principal = data.get('principal')
-    tenure = data.get('tenure')
-    staff_id = data.get('staff_id')
-    coop_id = data.get('coop_id')
-    print(coop_id)
+    getLoans = fetchAllloans(loan_id)
+    
+
+
+    loanType = getLoans[0]['loan_type']
+    principal = getLoans[0]['principal']
+    tenure = getLoans[0]['tenure'] 
+    staff_id = getLoans[0]['staff_id']
+    coop_id = getLoans[0]['coop_id']
+    print(loan_id,type,loanType,principal,tenure,staff_id,coop_id)
+    # print(coop_id)
     # loanType,principal,tenure
     # per_page = data.get('per_page')
    
@@ -350,7 +370,7 @@ def approve_loans():
 
     try:
         result = update_loans(loan_id,type,loanType,principal,tenure,staff_id,coop_id)
-        return jsonify(result), 201
+        return jsonify({"message":"Updated Successfully","data":result}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 @main_bp.route('/profile', methods=['POST'])
@@ -364,6 +384,61 @@ def getProfile():
 
     try:
         result = getProfiles(staff_id)
+        return jsonify(result), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+@main_bp.route('/cooporetive/profile', methods=['POST'])
+def getCoopProfile():
+    data = request.get_json()
+    
+    staff_id = data.get('coop_id')
+    
+    if not all([staff_id]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        result = getCoopProfiles(staff_id)
+        return jsonify(result), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@main_bp.route('/cooporetive/profile/update', methods=['POST'])
+def updateCoopProfile():
+    data = request.get_json()
+    # coop_id,cooperativename,email,registration_fee,phone,address,prefix,account_name,account_number,bank_name
+    coop_id = data.get('coop_id')
+    cooperativename = data.get('cooperativename')
+    email = data.get('email')
+    registration_fee = data.get('registration_fee')
+    phone = data.get('phone')
+    address = data.get('address')
+    prefix = data.get('prefix')
+    account_name = data.get('account_name')
+    account_number = data.get('account_number')
+    bank_name = data.get('bank_name')
+    
+    
+    
+    if not all([coop_id,cooperativename,email,registration_fee,phone,address,prefix,account_name,account_number,bank_name]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        result = updateCoopProfiles(coop_id,cooperativename,email,registration_fee,phone,address,prefix,account_name,account_number,bank_name)
+        return jsonify(result), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@main_bp.route('/loandetails', methods=['POST'])
+def getLoansDetails():
+    data = request.get_json()
+    
+    loan_id = data.get('loan_id')
+    
+    if not all([loan_id]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        result = fetchLoan(loan_id)
         return jsonify(result), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500

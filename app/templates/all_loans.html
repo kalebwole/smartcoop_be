@@ -82,26 +82,6 @@
                 required
               />
             </div>
-            <!-- <div class="form-group">
-              <label for="interest_amount">Interest Amount</label>
-              <input
-                type="number"
-                class="form-control"
-                id="interest_amount"
-                name="interest_amount"
-                required
-              />
-            </div> -->
-            <!-- <div class="form-group">
-              <label for="charges">Charges</label>
-              <input
-                type="number"
-                class="form-control"
-                id="charges"
-                name="charges"
-                required
-              />
-            </div> -->
             <div class="form-group">
               <label for="tenure">Tenure <sub>in Months</sub></label>
               <input
@@ -137,84 +117,100 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    // Fetch loan data
-    const user = JSON.parse(localStorage.getItem("user"));
-    const coop_id = user ? user.user.coop_id : "";
+    // Function to fetch loan data
+    const fetchLoanData = () => {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const coop_id = user ? user.user.coop_id : "";
 
-    fetch("http://localhost:5000/cooperative/loans", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        coop_id: coop_id,
-        per_page: 10,
-        page: 1,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        const loanList = document.getElementById("loanList");
-        data.forEach((loan) => {
-          const row = document.createElement("tr");
-          let actionButtons = "";
-
-          if (loan.approved_status === "approved") {
-            actionButtons = `
-            <button class="btn btn-info btn-sm" onclick="viewLoanDetails(${loan.id})"><i class="fas fa-eye"></i></button>
-            <button class="btn btn-danger btn-sm" onclick="deleteLoan(${loan.id})"><i class="fas fa-trash"></i></button>
-          `;
-          } else {
-            actionButtons = `
-            <button class="btn btn-success btn-sm" onclick="approveLoan(${loan.id})"><i class="fas fa-check"></i></button>
-            <button class="btn btn-warning btn-sm" onclick="cancelLoan(${loan.id})"><i class="fas fa-times"></i></button>
-          `;
-          }
-
-          row.innerHTML = `
-          <td>${loan.loan_id}</td>
-          <td>${loan.staff_id}</td>
-          <td>${loan.principal}</td>
-          <td>${loan.total_interest}</td>
-          <td>${loan.tenure}</td>
-          <td>${loan.total_loan}</td>
-          <td>${loan.amount_paid}</td>
-          <td>${loan.amount_disbursed}</td>
-          <td>${loan.request_date}</td>
-          <td>${loan.approved_status}</td>
-          <td>${loan.status}</td>
-          <td>${actionButtons}</td>
-        `;
-          loanList.appendChild(row);
-        });
+      fetch("http://localhost:5000/cooperative/loans", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          coop_id: coop_id,
+          per_page: 10,
+          page: 1,
+        }),
       })
-      .catch((error) => console.error("Error fetching loan data:", error));
+        .then((response) => response.json())
+        .then((data) => {
+          const loanList = document.getElementById("loanList");
+          loanList.innerHTML = ""; // Clear previous entries
+          data.forEach((loan) => {
+            const row = document.createElement("tr");
+            let actionButtons = "";
+
+            if (loan.approved_status === "approved") {
+              actionButtons = `
+                <a class="btn btn-info btn-sm" href="/dashboard/loan-details/?loan_id=${loan.loan_id}"><i class="fas fa-eye"></i></a>
+                <button class="btn btn-danger btn-sm" onclick="deleteLoan(${loan.loan_id})"><i class="fas fa-trash"></i></button>
+              `;
+            } else if (loan.approved_status === "rejected") {
+              actionButtons = `<div class = "alert alert-danger">Rejected</div>`;
+            } else {
+              actionButtons = `
+                 
+                <button class="btn btn-success btn-sm" onclick="approveLoan(${loan.loan_id})"><i class="fas fa-check"></i></button>
+                <button class="btn btn-warning btn-sm" onclick="rejectLoan(${loan.loan_id})"><i class="fas fa-times"></i></button>
+              `;
+            }
+
+            row.innerHTML = `
+              <td>${loan.loan_id}</td>
+              <td>${loan.staff_id}</td>
+              <td>${loan.principal}</td>
+              <td>${loan.total_interest}</td>
+              <td>${loan.tenure}</td>
+              <td>${loan.total_loan}</td>
+              <td>${loan.amount_paid}</td>
+              <td>${loan.amount_disbursed}</td>
+              <td>${loan.request_date}</td>
+              <td>${loan.approved_status}</td>
+              <td>${loan.status}</td>
+              <td>${actionButtons}</td>
+            `;
+            loanList.appendChild(row);
+          });
+        })
+        .catch((error) => console.error("Error fetching loan data:", error));
+    };
 
     // Fetch loan types for the dropdown
-    fetch("http://localhost:5000/cooperative/loantype", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        coop_id: coop_id,
-        per_page: 10,
-        page: 1,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        const loanTypeSelect = document.querySelector(
-          "select[name='loan_type']"
-        );
-        data.forEach((loanType) => {
-          const option = document.createElement("option");
-          option.value = loanType.id;
-          option.textContent = loanType.title;
-          loanTypeSelect.appendChild(option);
-        });
+    const fetchLoanTypes = () => {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const coop_id = user ? user.user.coop_id : "";
+
+      fetch("http://localhost:5000/cooperative/loantype", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          coop_id: coop_id,
+          per_page: 10,
+          page: 1,
+        }),
       })
-      .catch((error) => console.error("Error fetching loan types:", error));
+        .then((response) => response.json())
+        .then((data) => {
+          const loanTypeSelect = document.querySelector(
+            "select[name='loan_type']"
+          );
+          loanTypeSelect.innerHTML = ""; // Clear previous entries
+          data.forEach((loanType) => {
+            const option = document.createElement("option");
+            option.value = loanType.id;
+            option.textContent = loanType.title;
+            loanTypeSelect.appendChild(option);
+          });
+        })
+        .catch((error) => console.error("Error fetching loan types:", error));
+    };
+
+    // Initial fetches
+    fetchLoanData();
+    fetchLoanTypes();
 
     // Handle form submission for applying for a loan
     const form = document.getElementById("applyLoanForm");
@@ -227,12 +223,14 @@
         data[key] = value;
       });
 
+      const user = JSON.parse(localStorage.getItem("user"));
       if (user && user.user.coop_id) {
         data.coop_id = user.user.coop_id;
       } else {
         console.error("Failed to retrieve coop_id from localStorage.");
         return;
       }
+
       fetch("http://localhost:5000/cooperative/loan/apply", {
         method: "POST",
         headers: {
@@ -245,7 +243,7 @@
           return response.json().then((data) => ({ statusCode, data }));
         })
         .then(({ statusCode, data }) => {
-          if (statusCode == 200 || statusCode == 201) {
+          if (statusCode === 200 || statusCode === 201) {
             console.log("Success:", data);
             $("#applyLoanModal").modal("hide");
             showAlert(
@@ -254,7 +252,7 @@
             );
             setTimeout(() => {
               location.reload();
-            }, 10000);
+            }, 3000);
           } else {
             console.error("Error:", data);
             showAlert(data.error, "alert-danger");
@@ -271,7 +269,7 @@
   });
 
   function deleteLoan(id) {
-    fetch("http://localhost:5000/cooperative/loantype/delete", {
+    fetch("http://localhost:5000/cooperative/loan/delete", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -293,13 +291,57 @@
   }
 
   function approveLoan(id) {
-    // Implement loan approval functionality here
-    console.log("Approving loan with ID:", id);
+    const approvalData = {
+      loan_id: id,
+      type: "approved",
+    };
+
+    fetch("http://localhost:5000/cooperative/approval", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(approvalData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Loan Approved:", data);
+        showAlert("Loan approved successfully", "alert-success");
+        // setTimeout(() => {
+        //   location.reload();
+        // }, 2000);
+      })
+      .catch((error) => {
+        console.error("Error approving loan:", error);
+        showAlert("Failed to approve loan. Please try again.", "alert-danger");
+      });
   }
 
-  function cancelLoan(id) {
-    // Implement loan cancellation functionality here
-    console.log("Cancelling loan with ID:", id);
+  function rejectLoan(id) {
+    const rejectionData = {
+      loan_id: id,
+      type: "reject",
+    };
+
+    fetch("http://localhost:5000/cooperative/approval", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(rejectionData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Loan Rejected:", data);
+        showAlert("Loan rejected successfully", "alert-success");
+        setTimeout(() => {
+          location.reload();
+        }, 2000);
+      })
+      .catch((error) => {
+        console.error("Error rejecting loan:", error);
+        showAlert("Failed to reject loan. Please try again.", "alert-danger");
+      });
   }
 
   function viewLoanDetails(id) {
@@ -320,154 +362,5 @@
     }, 3000);
   }
 </script>
-<!-- <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    // Fetch loan data
-    const user = JSON.parse(localStorage.getItem("user"));
-    const coop_id = user ? user.user.coop_id : "";
-
-    fetch("http://localhost:5000/cooperative/loans", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        coop_id: coop_id,
-        per_page: 10,
-        page: 1,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        const loanList = document.getElementById("loanList");
-        data.forEach((loan) => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-          <td>${loan.id}</td>
-          <td>${loan.staff_id}</td>
-          <td>${loan.principal}</td>
-          <td>${loan.total_interest}</td>
-          <td>${loan.tenure}</td>
-          <td>${loan.total_loan}</td>
-          <td>${loan.amount_paid}</td>
-          <td>${loan.amount_disbursed}</td>
-          <td>${loan.request_date}</td>
-          <td>${loan.approved_status}</td>
-          <td>${loan.status}</td>
-          <td>
-            
-            <button class="btn btn-danger btn-sm" onclick="deleteLoan(${loan.id})"><i class="fas fa-trash"></i></button>
-          </td>
-        `;
-          loanList.appendChild(row);
-        });
-      })
-      .catch((error) => console.error("Error fetching loan data:", error));
-
-    // Fetch loan types for the dropdown
-    fetch("http://localhost:5000/cooperative/loantype", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        coop_id: coop_id,
-        per_page: 10,
-        page: 1,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        const loanTypeSelect = document.querySelector(
-          "select[name='loan_type']"
-        );
-        data.forEach((loanType) => {
-          const option = document.createElement("option");
-          option.value = loanType.id;
-          option.textContent = loanType.title;
-          loanTypeSelect.appendChild(option);
-        });
-      })
-      .catch((error) => console.error("Error fetching loan types:", error));
-
-    // Handle form submission for applying for a loan
-    const form = document.getElementById("applyLoanForm");
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-
-      const formData = new FormData(form);
-      const data = {};
-      formData.forEach((value, key) => {
-        data[key] = value;
-      });
-
-      if (user && user.user.coop_id) {
-        data.coop_id = user.user.coop_id;
-      } else {
-        console.error("Failed to retrieve coop_id from localStorage.");
-        return;
-      }
-
-      fetch("http://localhost:5000/cooperative/loan/apply", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("Success:", data);
-          $("#applyLoanModal").modal("hide");
-          showAlert("Loan application submitted successfully", "alert-success");
-          // setTimeout(() => {
-          //   location.reload();
-          // }, 2000);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          showAlert(
-            "Failed to submit loan application. Please try again.",
-            "alert-danger"
-          );
-        });
-    });
-  });
-
-  function deleteLoan(id) {
-    fetch("http://localhost:5000/cooperative/loantype/delete", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id: id }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Success:", data);
-        showAlert("Loan deleted successfully", "alert-success");
-        setTimeout(() => {
-          location.reload();
-        }, 2000);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        showAlert("Failed to delete loan. Please try again.", "alert-danger");
-      });
-  }
-
-  function showAlert(message, className) {
-    const alertDiv = document.createElement("div");
-    alertDiv.className = `alert ${className}`;
-    alertDiv.appendChild(document.createTextNode(message));
-
-    const container = document.querySelector(".container");
-    container.insertBefore(alertDiv, container.firstChild);
-
-    setTimeout(() => {
-      alertDiv.remove();
-    }, 3000);
-  }
-</script> -->
 
 {% include 'includes/footer.html' %}

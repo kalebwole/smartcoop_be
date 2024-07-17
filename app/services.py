@@ -51,7 +51,7 @@ def verify_credentials(email, password):
             }
     
     return None
-def create_member(fullname, email, phoneno, address, staff_id, dob, gender, cooperative_id):
+def create_member(fullname, email, phoneno, address, staff_id, dob, gender, cooperative_id,nok_name,nok_phone,nok_relationship,bank_name,account_number,sort_code,salary_number):
     # Mock implementation assuming current_app.db is properly configured
     db = current_app.db
     
@@ -62,13 +62,18 @@ def create_member(fullname, email, phoneno, address, staff_id, dob, gender, coop
 
     # Create new member record
     query = """
-    INSERT INTO cooperative_members (fullname, email, phoneno, address, staff_id, dob, gender )
-    VALUES (%s, %s, %s, %s, %s, %s,  %s)
+    INSERT INTO cooperative_members (fullname, email, phoneno, address, staff_id, dob, gender,nok_name,nok_phone,nok_relationship,bank_name,account_number,sort_code,salary_number )
+    VALUES (%s, %s, %s, %s, %s, %s,  %s,%s,%s,%s,%s,%s,%s,%s)
     """
-    params = (fullname, email, phoneno, address, staff_id, dob, gender)
+    params = (fullname, email, phoneno, address, staff_id, dob, gender,nok_name,nok_phone,nok_relationship,bank_name,account_number,sort_code,salary_number)
     
+    queryLoan = """
+                    INSERT INTO member_cooperatives (user_id,cooperative_id	) VALUES (%s,%s)
+                """
+    paramsLoan = (staff_id,cooperative_id,)
     try:
         db.create(query, params)
+        db.create(queryLoan,paramsLoan)
         return {"message": "Member created successfully."}
     except Exception as e:
         print(f"Error creating member: {e}")
@@ -243,7 +248,7 @@ def loanCalculator(loanType,principal,tenure):
 
         
     except Exception as e:
-        print(f"Error fetching loan types: {e}")
+        print(f"Error calcu: {e}")
         return []
     
 def createLoan(staffId,coop_id,loanObject, loanType,LTObject):
@@ -287,7 +292,7 @@ def createLoan(staffId,coop_id,loanObject, loanType,LTObject):
                 VALUES (%s,%s, %s, %s, %s,%s, %s, %s, %s , %s, %s)
                 """
         random_number = random.randint(1000000000, 9999999999)
-        params = (random_number,coop_id, staffId, principal, tenure,LTObject['loan_type'],total_interest,monthly_interest, monthly_repayment,amount_disbursed,total_loan )
+        params = (random_number,coop_id, staffId, principal, tenure,loanType,total_interest,monthly_interest, monthly_repayment,amount_disbursed,total_loan )
         cooperative_id = db.create(query, params)
         
       
@@ -319,34 +324,72 @@ def fetch_loans(coop_id, page=1, per_page=10):
         print(f"Error fetching loan types: {e}")
         return []
 
+def fetchAllloans(coop_id):
+     
+    db = current_app.db
+    
+    
+    # offset = (page - 1) * per_page
+    
+    
+    query = """
+    SELECT * FROM loan_application 
+    WHERE loan_id = %s
+    
+    """
+    
+    params = (coop_id,)
+    # print(coop_id)  
+    try:
+        loan_types = db.read(query, params)
+        return loan_types
+    except Exception as e:
+        print(f"Error fetching loans: {e}")
+        return []
+
  
+
 def update_loans(loan_id, type,loanType,principal,tenure,staff_id,coop_id):
     # print(type) 
     db = current_app.db
+    # print(type)
     current_date = datetime.now().date()
-    if(type=='approve'):
-    
-        query = """
-            UPDATE loan_application SET approved_status = 'approved', status = 'active',  approved_date = %s WHERE id = %s 
-        """
-        newLoan = loanCalculator(loanType,principal,tenure)
-        # print(newLoan)
-        createInstallment(newLoan,staff_id,coop_id,loan_id)
+    print(type)
+    if(type=='approved'):
+        # print("yes here")
+        try:
+            query = """
+                UPDATE loan_application SET approved_status = 'approved', status = 'active',  approved_date = %s WHERE loan_id = %s 
+            """
+            newLoan = loanCalculator(loanType,principal,tenure)
+
+            # print(query)
+            createInstallment(newLoan,staff_id,coop_id,loan_id)
+            params = (current_date, loan_id,)
+            # print(params)
+            loan_types = db.update(query, params)
+            return loan_types
+        except Exception as e:
+            print(f"Error updating loan types: {e}")
+            return []
+        
     else:
         query = """
-            UPDATE loan_application SET approved_status = 'rejected',  approved_date = %s WHERE id = %s 
+            UPDATE loan_application SET approved_status = 'rejected',  approved_date = %s WHERE loan_id = %s 
         """
-
-    
-    params = (current_date, loan_id,)
-    # print(coop_id)  
-    try:
+        params = (current_date, loan_id,)
         loan_types = db.update(query, params)
+        return "no"
+    
+    
+    # print(coop_id)  
+    # try:
+       
         
-        return loan_types
-    except Exception as e:
-        print(f"Error fetching loan types: {e}")
-        return []
+    #     return loan_types
+    # except Exception as e:
+    #     print(f"Error updating loan types: {e}")
+    #     return []
 def createInstallment(loanObject,staff_id,coop_id,loan_id):
     db = current_app.db
     current_date = datetime.now().date()
@@ -457,4 +500,71 @@ def getProfiles(user_id):
         print(f"Error fetching loan types: {e}")
         return []
 
- 
+def getCoopProfiles(user_id):
+     
+    db = current_app.db
+    
+    
+    # offset = (page - 1) * per_page
+    
+    
+    query = """
+    SELECT * FROM  cooperative
+    WHERE coop_id = %s
+    
+    """
+    
+    params = (user_id,)
+
+     # print(coop_id)  
+    try:
+        userData = db.read(query, params)
+
+
+        return {"coop":userData[0]}
+    except Exception as e:
+        print(f"Error fetching loan types: {e}")
+        return []
+
+def updateCoopProfiles(coop_id,cooperativename,email,registration_fee,phone,address,prefix,account_name,account_number,bank_name):
+    db = current_app.db
+    
+    
+    query = """
+    UPDATE cooperative SET cooperativename = %s, email = %s, registration_fee = %s, phone = %s, address = %s, prefix = %s, account_name = %s, account_number = %s,   bank_name = %s WHERE coop_id = %s
+    
+    """
+    
+    params = (cooperativename,email,registration_fee,phone,address,prefix,account_name,account_number,bank_name,coop_id,)
+
+     # print(coop_id)  
+    try:
+        userData = db.update(query, params)
+
+
+        return {"message":"Updated Successfully"}
+    except Exception as e:
+        print(f"Error fetching loan types: {e}")
+        return []
+def fetchLoan(loan_id):
+     db = current_app.db
+     queryLoan = """
+            SELECT * FROM  loan_application
+            WHERE loan_id = %s
+    
+            """
+     params = (loan_id,)
+     queryLoanDetail = """
+            SELECT * FROM  loan_payment_history
+            WHERE loan_id = %s
+    
+            """
+     try:
+        loanData = db.read(queryLoan, params)
+        detailData = db.read(queryLoanDetail,params)
+
+        return {"coop":loanData[0],"repayment":detailData}
+     except Exception as e:
+        print(f"Error fetching loan types: {e}")
+        return []
+
