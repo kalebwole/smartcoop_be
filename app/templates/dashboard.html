@@ -2,13 +2,116 @@
 
 <div class="content">
   <h1>Dashboard</h1>
-  <p>
-    Welcome to the Cooperative Society Admin Dashboard. Here you can manage all
-    aspects of the cooperative society, including member registrations, loan
-    approvals, contributions, and more.
-  </p>
 
-  <!-- Dashboard widgets and content go here -->
+  <div class="row">
+    <div class="col-md-3">
+      <div class="card bg-primary text-white text-center">
+        <h1>9</h1>
+        <p>Members</p>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card bg-danger text-white text-center">
+        <h1>$100</h1>
+        <p>Total Loan</p>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card bg-success text-white text-center">
+        <h1>$900</h1>
+        <p>Total Savings</p>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card bg-warning text-center">
+        <h1>9</h1>
+        <p>Waiting Approval</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-2">
+    <div class="col-md-3">
+      <div class="card bg-info text-white text-center">
+        <h1>$900</h1>
+        <p>This Month(Savings)</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-info text-white text-center">
+        <h1>$900</h1>
+        <p>This Month(Loans)</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-info text-white text-center">
+        <h1>$900</h1>
+        <p>This Month(Savings)</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-info text-white text-center">
+        <h1>90</h1>
+        <p>This Month(Applications)</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-2">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h4>Transactions</h4>
+          <a href="#" class="float-right"
+            ><i class="fas fa-arrow-right"></i> View All</a
+          >
+        </div>
+        <div class="card-body">
+          <!-- Table for transactions -->
+          <table class="table">
+            <!-- Table content here -->
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h4>Announcements</h4>
+          <a href="#" class="float-right"
+            ><i class="fas fa-arrow-right"></i> View All</a
+          >
+        </div>
+        <div class="card-body">
+          <!-- Table for announcements -->
+          <table class="table">
+            <!-- Table content here -->
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h4>New Messages</h4>
+          <a href="#" class="float-right text-dark"
+            ><i class="fas fa-arrow-right"></i> View All</a
+          >
+        </div>
+        <div class="card-body">
+          <!-- Table for new messages -->
+          <table class="table">
+            <!-- Table content here -->
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 {% include 'includes/footer.html' %}

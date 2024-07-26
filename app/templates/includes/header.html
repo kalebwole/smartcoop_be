@@ -87,7 +87,11 @@
   <body>
     <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
       <a class="navbar-brand" href="#">
-        <img src="logo1.png" alt="Logo" style="height: 40px" />
+        <img
+          src="{{ url_for('static', filename='image/logo1.png') }}"
+          alt="Logo"
+          style="height: 40px"
+        />
       </a>
       <button
         class="navbar-toggler"
@@ -133,7 +137,7 @@
     <div class="sidebar p-3" id="sidebar">
       <ul class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link active" href="dashboard"
+          <a class="nav-link active" href="/dashboard"
             ><i class="fas fa-tachometer-alt"></i> Dashboard</a
           >
         </li>
@@ -201,7 +205,7 @@
             aria-expanded="false"
             aria-controls="loanManagementMenu"
           >
-            <i class="fas fa-money-check-alt"></i> Loans
+            <i class="fas fa-money-check-alt"></i> Transactions
           </a>
           <div class="collapse" id="loanManagementMenu">
             <ul class="nav flex-column ml-3">
@@ -227,6 +231,17 @@
                   >Manage Loan Types</a
                 >
               </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/dashboard/contribution"
+                  >Manage Contribution</a
+                >
+              </li>
+
+              <li class="nav-item">
+                <a class="nav-link" href="/dashboard/savings-type"
+                  >Manage Saving Types</a
+                >
+              </li>
             </ul>
           </div>
         </li>
@@ -239,19 +254,19 @@
             aria-expanded="false"
             aria-controls="contributionManagementMenu"
           >
-            <i class="fas fa-hand-holding-usd"></i> Contributions
+            <i class="fas fa-file-alt"></i> Reports
           </a>
           <div class="collapse" id="contributionManagementMenu">
             <ul class="nav flex-column ml-3">
               <li class="nav-item">
                 <a class="nav-link" href="/dashboard/contribution"
-                  >Manage Contribution</a
+                  >Individual Report</a
                 >
               </li>
 
               <li class="nav-item">
                 <a class="nav-link" href="/dashboard/savings-type"
-                  >Manage Saving Types</a
+                  >Cooperative Report</a
                 >
               </li>
             </ul>
@@ -286,26 +301,26 @@
             </ul>
           </div>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a class="nav-link" href="#"
             ><i class="fas fa-history"></i> Transactions</a
           >
-        </li>
+        </li> -->
         <li class="nav-item">
-          <a class="nav-link" href="#" id="notification"
-            ><i class="fas fa-bell"></i> Notifications</a
+          <a class="nav-link" href="/dashboard/announcement" id="notification"
+            ><i class="fas fa-bell"></i> Announcement</a
           >
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a class="nav-link" href="#" id="messaging"
             ><i class="fas fa-envelope"></i> Messaging</a
           >
-        </li>
-        <li class="nav-item">
+        </li> -->
+        <!-- <li class="nav-item">
           <a class="nav-link" href="#" id="doc_mngt"
             ><i class="fas fa-file-alt"></i> Document Mngt</a
           >
-        </li>
+        </li> -->
         <li class="nav-item">
           <a class="nav-link" href="#"
             ><i class="fas fa-question-circle"></i> Supports</a

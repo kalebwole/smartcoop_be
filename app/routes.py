@@ -1,6 +1,9 @@
-from flask import Blueprint, request, jsonify, render_template, current_app
-from .services import fetchLoan,getCoopProfiles,insert_cooperative, verify_credentials, create_member, fetch_all_members, delete_member, create_loan_type,delete_loan_type,fetch_loan_types, loanCalculator,createLoan, fetch_loans,update_loans, create_savings_type, fetch_savings_types, newSavings,fetch_savings,getProfiles,updateCoopProfiles,fetchAllloans
 
+from flask import Blueprint, request, jsonify, render_template, current_app
+from .services import fetchLoan,getCoopProfiles,insert_cooperative, verify_credentials, create_member, fetch_all_members, delete_member, create_loan_type,delete_loan_type,fetch_loan_types, loanCalculator,createLoan, fetch_loans,update_loans, create_savings_type, fetch_savings_types, newSavings,fetch_savings,getProfiles,updateCoopProfiles,fetchAllloans, createtransactions,repayLoan,fetch_announcement
+import random
+from .crypt import encrypt_text, decrypt_text
+from .emailService import send_email
 main_bp = Blueprint('main', __name__)
 
 ###################################################### 
@@ -12,10 +15,23 @@ main_bp = Blueprint('main', __name__)
 @main_bp.route('/', methods=['GET'])
 def hello():
     return render_template('default.html')
+@main_bp.route('/dashboard/announcement', methods=['GET'])
+def viewannounce():
+    return render_template('annoucementview.html')
+@main_bp.route('/member-sign-up', methods=['GET'])
+def member_sign_up():
+    return render_template('membersign-up.html')
+
 
 @main_bp.route('/sign-up', methods=['GET'])
 def signupView():
     return render_template('signup.html')
+@main_bp.route('/verify', methods=['GET'])
+def VerifyView():
+    return render_template('verify.html')
+@main_bp.route('/onboarding', methods=['GET'])
+def onboarding():
+    return render_template('onboarding.html')
 @main_bp.route('/sign-in', methods=['GET'])
 def signinView():
     return render_template('signin.html')
@@ -59,6 +75,60 @@ def coophistory():
 # API ROUTES
 ###################################################### 
 ######################################################
+@main_bp.route('/send-otp', methods=['POST'])
+def send_otp():
+    data = request.get_json()
+    
+    
+    email = data.get('email')
+     
+ 
+  
+    if  not email :
+        return jsonify({"error": "  email is required "}), 400
+
+    # generate otp
+    otp = random.randint(100000, 999999)
+    encryptOTP = encrypt_text(str(otp))
+    
+    emailText = 'Welcome to SmartScoop, Here is your OTP Code '+str(otp)
+    send_email(email,"SmartCoop OTP",emailText)
+    
+    print(encryptOTP)
+    return jsonify({"message": "OTP Sent successfully","OTP":str(encryptOTP)}), 201
+
+
+@main_bp.route('/verify-otp', methods=['POST'])
+def verify_otp():
+    data = request.get_json()
+    
+    
+    email = data.get('email')
+    otp = data.get('otp')
+    encryptOTP = data.get('encryptedotp')
+
+    decryptedText = decrypt_text(encryptOTP)
+    print(decryptedText)
+    if(decryptedText != str(otp)):
+        return jsonify({"error": "Otp do not match"}), 400
+    
+    # if(dec)
+     
+ 
+  
+    # if  not email :
+    #     return jsonify({"error": "  email is required "}), 400
+
+    # # generate otp
+    # otp = random.randint(100000, 999999)
+    # encryptOTP = encrypt_text(str(otp))
+    
+    # emailText = 'Welcome to SmartScoop, Here is your OTP Code '+str(otp)
+    # send_email(email,"SmartCoop OTP",emailText)
+    
+    # print(encryptOTP)
+    return jsonify({"message": "OTP Matched"}), 201
+
 
 @main_bp.route('/cooperative/signup', methods=['POST'])
 def add_cooperative():
@@ -101,7 +171,7 @@ def sign_in():
 @main_bp.route('/cooperative/members/create', methods=['POST'])
 def create_cooperative_member():
     data = request.get_json()
-    
+
     fullname = data.get('fullname')
     email = data.get('email')
     phoneno = data.get('phoneno')
@@ -117,17 +187,21 @@ def create_cooperative_member():
     account_number = data.get('account_number')
     sort_code = data.get('sort_code')
     salary_number = data.get('salary_number')
+    password = data.get('password')
 
-
-    if not all([fullname, email, phoneno, address, staff_id, dob, gender, cooperative_id, nok_name,nok_phone,nok_relationship,bank_name,account_number,sort_code,salary_number]):
+    if not all([fullname, email, phoneno, address, staff_id, dob, gender, cooperative_id, nok_name, nok_phone, nok_relationship, bank_name, account_number, sort_code, salary_number]):
         return jsonify({"error": "Missing required fields"}), 400
 
     try:
-        result = create_member(fullname, email, phoneno, address, staff_id, dob, gender, cooperative_id,nok_name,nok_phone,nok_relationship,bank_name,account_number,sort_code,salary_number)
+        result = create_member(fullname, email, phoneno, address, staff_id, dob, gender, cooperative_id, nok_name, nok_phone, nok_relationship, bank_name, account_number, sort_code, salary_number, password)
+        
+        if 'error' in result and result['error'] == "Member already exists.":
+            return jsonify(result), 400
+        
         return jsonify(result), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
+    
 @main_bp.route('/cooperative/members', methods=['GET'])
 def get_all_members():
     members = fetch_all_members()
@@ -360,7 +434,7 @@ def approve_loans():
     tenure = getLoans[0]['tenure'] 
     staff_id = getLoans[0]['staff_id']
     coop_id = getLoans[0]['coop_id']
-    print(loan_id,type,loanType,principal,tenure,staff_id,coop_id)
+    # print(loan_id,type,loanType,principal,tenure,staff_id,coop_id)
     # print(coop_id)
     # loanType,principal,tenure
     # per_page = data.get('per_page')
@@ -370,6 +444,7 @@ def approve_loans():
 
     try:
         result = update_loans(loan_id,type,loanType,principal,tenure,staff_id,coop_id)
+        createtransactions(coop_id,staff_id,principal,'debit','coop - user','loan')
         return jsonify({"message":"Updated Successfully","data":result}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -442,3 +517,65 @@ def getLoansDetails():
         return jsonify(result), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@main_bp.route('/cooperative/loan/repay', methods=['POST'])
+def repayloans():
+    data = request.get_json()
+    
+    loan_id = data.get('loan_id')
+    amount = data.get('amount')
+    
+    if not all([loan_id]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        result = repayLoan(loan_id,amount)
+        return jsonify(result), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@main_bp.route('/cooperative/annoucement', methods=['POST'])
+def get_announcement():
+    data = request.get_json()
+    
+    coop_id = data.get('coop_id')
+  
+    if not all([coop_id ]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        result = fetch_announcement(coop_id)
+        return jsonify(result), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@main_bp.route('/cooperative/announcement/create', methods=['POST'])
+def new_announcement():
+    data = request.get_json()
+    title = data.get('title')
+    content = data.get('content')
+
+    coop_id = data.get('coop_id')
+    db = current_app.db
+    
+    # print(data)
+    # # per_page = data.get('per_page')
+   
+ 
+    try:
+ 
+ 
+
+        #  get the loantype 
+        loanTypeQuery = """
+                INSERT INTO announcement (title,content,coop_id) VALUES (%s,%s,%s)
+        """
+        paramsType = (title,content,coop_id,)
+        loan_types = db.create(loanTypeQuery, paramsType)
+
+        # db.create
+
+        return jsonify({"message":"Created successfully"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    

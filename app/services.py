@@ -51,10 +51,17 @@ def verify_credentials(email, password):
             }
     
     return None
-def create_member(fullname, email, phoneno, address, staff_id, dob, gender, cooperative_id,nok_name,nok_phone,nok_relationship,bank_name,account_number,sort_code,salary_number):
+def create_member(fullname, email, phoneno, address, staff_id, dob, gender, cooperative_id, nok_name, nok_phone, nok_relationship, bank_name, account_number, sort_code, salary_number, password=None):
     # Mock implementation assuming current_app.db is properly configured
     db = current_app.db
-    
+
+    # Set default password if not provided
+    default_password = "password"  # Replace with your desired default password
+    if not password:
+        password = default_password
+    print(password)
+    hashed_password = hash_password(password)
+
     # Check if member already exists
     check_query = "SELECT COUNT(*) FROM cooperative_members WHERE email = %s"
     if db.read(check_query, (email,))[0]['COUNT(*)'] > 0:
@@ -62,23 +69,23 @@ def create_member(fullname, email, phoneno, address, staff_id, dob, gender, coop
 
     # Create new member record
     query = """
-    INSERT INTO cooperative_members (fullname, email, phoneno, address, staff_id, dob, gender,nok_name,nok_phone,nok_relationship,bank_name,account_number,sort_code,salary_number )
-    VALUES (%s, %s, %s, %s, %s, %s,  %s,%s,%s,%s,%s,%s,%s,%s)
+    INSERT INTO cooperative_members (fullname, email, phoneno, address, staff_id, dob, gender, nok_name, nok_phone, nok_relationship, bank_name, account_number, sort_code, salary_number, password)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
-    params = (fullname, email, phoneno, address, staff_id, dob, gender,nok_name,nok_phone,nok_relationship,bank_name,account_number,sort_code,salary_number)
+    params = (fullname, email, phoneno, address, staff_id, dob, gender, nok_name, nok_phone, nok_relationship, bank_name, account_number, sort_code, salary_number, hashed_password)
     
     queryLoan = """
-                    INSERT INTO member_cooperatives (user_id,cooperative_id	) VALUES (%s,%s)
-                """
-    paramsLoan = (staff_id,cooperative_id,)
+    INSERT INTO member_cooperatives (user_id, cooperative_id) VALUES (%s, %s)
+    """
+    paramsLoan = (staff_id, cooperative_id)
+    
     try:
         db.create(query, params)
-        db.create(queryLoan,paramsLoan)
+        db.create(queryLoan, paramsLoan)
         return {"message": "Member created successfully."}
     except Exception as e:
         print(f"Error creating member: {e}")
         return {"error": "Error creating member"}
-
 def fetch_all_members():
     
     db = current_app.db
@@ -454,6 +461,10 @@ def newSavings(coop_id,user_id,amount,savings_type,channel):
                     """
         paramsUpdate = (walletUpdata,user_id,)
         updateUsers = db.update(queryUpdate,paramsUpdate)
+
+
+        # create transaction
+        createtransactions(coop_id,user_id,amount,'credit','user - user','savings')
         return "Successful"
     except Exception as e:
         print(f"Error fetching loan types: {e}")
@@ -568,3 +579,113 @@ def fetchLoan(loan_id):
         print(f"Error fetching loan types: {e}")
         return []
 
+def createtransactions(coop_id, staff_id, amount, transaction_type,initiator,type):
+     
+    db = current_app.db
+    
+ 
+  
+    query = """
+    INSERT INTO transactions (coop_id, staff_id, amount, transaction_type,initiator,type)
+    VALUES (%s, %s, %s, %s,%s,%s)
+    """
+    params = (coop_id, staff_id, amount, transaction_type,initiator,type)
+    
+    try:
+        db.create(query, params)
+    
+        return {"message": "Transaction created successfully."}
+    except Exception as e:
+        print(f"Error creating transaction: {e}")
+        return {"error": "Error creating transaction"}
+
+def dashboard(coop_id):
+     try:
+        db = current_app.db
+     
+        # add to the users wallet
+        getUsers = """
+                SELECT count(id) as members,sum(wallet) as savings FROM cooperative_members where coop_id = %s
+                        """
+        getParamsUser = (coop_id,)
+        getUsers = db.read(getUsers,getParamsUser)
+ 
+        return "Successful"
+     except Exception as e:
+        print(f"Error fetching loan types: {e}")
+        return []
+# def creditWallet(staff_id,amount):
+def repayLoan(loan_id,amount):
+     try:
+        db = current_app.db
+     
+        # add to the users wallet
+        getLoanData = """
+                SELECT * FROM loan_payment_history where loan_id = %s  and status = 'not paid'
+                        """
+        getParamsUser = (loan_id,)
+        loanRepayment = db.read(getLoanData,getParamsUser)
+        # print(loa)
+        keptAmount = amount
+        amountPaid = 0
+        for each in loanRepayment:
+            # print(keptAmount)
+            if(keptAmount<=0):
+                break
+            else:
+                
+                if keptAmount > each['amount_to_pay']:
+                    
+                    # print(str(keptAmount) +" "+str(each['amount_to_pay']) +" "+str(amount))
+                    currentID = each['id']
+                    updateLoan = """
+                                    UPDATE loan_payment_history SET amount_paid = %s, status  = 'paid' WHERE loan_id = %s and id = %s
+                                        """
+                    lph = (each['amount_to_pay'],loan_id,currentID)
+                    amountPaid = amountPaid + each['amount_to_pay']
+                    db.update(updateLoan,lph)
+                    keptAmount = keptAmount - each['amount_to_pay']
+                else:
+                    # creditWallet(each['staff_id'],keptAmount)
+                    newSavings(each['coop_id'],each['staff_id'],keptAmount,'loanBalance','wallet')
+                    keptAmount = keptAmount - keptAmount
+        # print(amountPaid)
+        # get the loan data 
+        getLoanDetail = """
+                SELECT * FROM loan_application where loan_id = %s 
+                        """
+        getParamsDetail = (loan_id,)
+        loanDeatils = db.read(getLoanDetail,getParamsDetail)
+        # add the amount paid
+        status = "active"
+        amountTotal = loanDeatils[0]['amount_paid'] + amountPaid
+        # print(str(amountTotal +" "+ str(loanDeatils[0]['amount_paid'])))
+        # print(str(amountTotal) +" "+str(amountPaid))
+        # print(loanDeatils[0][''])
+        if(amountTotal >= loanDeatils[0]['total_loan']):
+            status = 'completed'
+            updateLoanDetails = """
+                                    UPDATE loan_application SET amount_paid = %s, status  = %s WHERE loan_id = %s """
+            slph = (amountTotal,status,loan_id)
+            # amountPaid = amountPaid + each['amount_to_pay']
+            db.update(updateLoanDetails,slph)
+            
+        # return loanRepayment
+
+     except Exception as e:
+        print(f"Error fetching loan types: {e}")
+        return []
+def fetch_announcement(coop_id):
+    try:
+        db = current_app.db
+     
+        # add to the users wallet
+        getLoanData = """
+                SELECT * FROM announcement where coop_id = %s  and status = 'active'
+                        """
+        getParamsUser = (coop_id,)
+        loanRepayment = db.read(getLoanData,getParamsUser)
+        return loanRepayment
+    except Exception as e:
+        print(f"Error fetching loan types: {e}")
+        return []
