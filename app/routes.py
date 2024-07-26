@@ -12,7 +12,7 @@ main_bp = Blueprint('main', __name__)
 ###################################################### 
 ######################################################
 
-@main_bp.route('/', methods=['GET'])
+@main_bp.route('/coop', methods=['GET'])
 def hello():
     return render_template('default.html')
 @main_bp.route('/dashboard/announcement', methods=['GET'])
