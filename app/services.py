@@ -101,15 +101,16 @@ def fetch_all_members(coop_id):
             IDS = each['user_id']
         else:
             IDS = IDS+","+each['user_id']
-        print(IDS)
+         
         
 
 
-    return IDS
+ 
 
-    query = "SELECT id, fullname, email, phoneno, address, staff_id, dob, gender  FROM cooperative_members"
+    query = "SELECT id, fullname, email, phoneno, address, staff_id, dob, gender   FROM cooperative_members WHERE %s IN staff_id"
     
     try:
+        par = (IDS,)
         members = db.read(query)
         return members
     except Exception as e:
