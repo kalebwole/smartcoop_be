@@ -106,12 +106,14 @@ def fetch_all_members(coop_id):
 
 
  
-
-    query = "SELECT id, fullname, email, phoneno, address, staff_id, dob, gender   FROM cooperative_members WHERE %s IN staff_id"
-    
+    string_list = IDS.strip(',').split(',')
+    placeholders = ', '.join(['%s'] * len(string_list))
+    query = f"SELECT id, fullname, email, phoneno, address, staff_id, dob, gender FROM cooperative_members WHERE staff_id IN ({placeholders})"
+    # query = "SELECT id, fullname, email, phoneno, address, staff_id, dob, gender   FROM cooperative_members WHERE %s IN staff_id"
+    print(query)
     try:
-        par = (IDS,)
-        members = db.read(query)
+        # par = (IDS,)
+        members = db.read(query, string_list)
         return members
     except Exception as e:
         print(f"Error fetching members: {e}")
