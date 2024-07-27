@@ -9,7 +9,7 @@ def create_app():
     # Database configuration
     app.config['DB_HOST'] = 'localhost'
     app.config['DB_USER'] = 'root'
-    app.config['DB_PASSWORD'] = '@Samclem91'
+    app.config['DB_PASSWORD'] = 'Business@1'
     app.config['DB_NAME'] = 'smartscoop'
 
     # Initialize database connection
