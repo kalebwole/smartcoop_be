@@ -35,35 +35,51 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      fetch("http://localhost:5000/cooperative/members")
-        .then((response) => response.json())
-        .then((data) => {
-          const memberList = document.getElementById("memberList");
-          data.forEach((member) => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-              <td>${member.id}</td>
-              <td>${member.fullname}</td>
-              <td>${member.email}</td>
-              <td>${member.address}</td>
-              <td>${member.phoneno}</td>
-              <td>${
-                member.dob ? new Date(member.dob).toLocaleDateString() : "N/A"
-              }</td>
-              <td>${member.gender}</td>
-              <td>
-                <a class='btn btn-primary'><i class='fa fa-pen'></i></a>
-                <a class='btn btn-danger'><i class='fa fa-trash'></i></a>
-                <a class='btn btn-info' href='users/view/?user=${
-                  member.staff_id
-                }'><i class='fa fa-search'></i></a>
-              </td>
-            `;
-            memberList.appendChild(row);
-          });
-          addFilterFunctionality();
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user && user.user.coop_id) {
+        const coop_id = user.user.coop_id;
+
+        fetch("http://localhost:5000/cooperative/members", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ coop_id }),
         })
-        .catch((error) => console.error("Error fetching member data:", error));
+          .then((response) => response.json())
+          .then((data) => {
+            const memberList = document.getElementById("memberList");
+            data.forEach((member) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+        <td>${member.id}</td>
+        <td>${member.fullname}</td>
+        <td>${member.email}</td>
+        <td>${member.address}</td>
+        <td>${member.phoneno}</td>
+        <td>${
+          member.dob ? new Date(member.dob).toLocaleDateString() : "N/A"
+        }</td>
+        <td>${member.gender}</td>
+        <td>
+          <a class='btn btn-primary'><i class='fa fa-pen'></i></a>
+          <a class='btn btn-danger'><i class='fa fa-trash'></i></a>
+          <a class='btn btn-info' href='users/view/?user=${
+            member.staff_id
+          }'><i class='fa fa-search'></i></a>
+        </td>
+      `;
+              memberList.appendChild(row);
+            });
+            addFilterFunctionality();
+          })
+          .catch((error) =>
+            console.error("Error fetching member data:", error)
+          );
+      } else {
+        console.error("Failed to retrieve coop_id from localStorage.");
+        return;
+      }
     });
 
     function addFilterFunctionality() {

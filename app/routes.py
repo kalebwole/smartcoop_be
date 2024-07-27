@@ -202,7 +202,7 @@ def create_cooperative_member():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@main_bp.route('/cooperative/members', methods=['GET'])
+@main_bp.route('/cooperative/members', methods=['POST'])
 def get_all_members():
     data = request.get_json()
     coop_id  = data.get('coop_id')
