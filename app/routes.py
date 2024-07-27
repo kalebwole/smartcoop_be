@@ -22,6 +22,12 @@ def viewannounce():
 def member_sign_up():
     return render_template('membersign-up.html')
 
+@main_bp.route('/sign-in-member', methods=['GET'])
+def member_sign_in():
+    return render_template('member-sign-in.html')
+@main_bp.route('/members', methods=['GET'])
+def member_dashboard():
+    return render_template('membersdashboard.html')
 
 @main_bp.route('/sign-up', methods=['GET'])
 def signupView():
@@ -155,11 +161,12 @@ def sign_in():
     
     email = data.get('email')
     password = data.get('password')
+    typed = data.get('type')
     
     if not email or not password:
         return jsonify({"error": "Email and password are required"}), 400
     
-    user = verify_credentials(email, password)
+    user = verify_credentials(email, password,typed)
     
     if user:
         return jsonify({

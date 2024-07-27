@@ -34,21 +34,41 @@ def insert_cooperative(cooperativename, email, password ):
         print(f"Error inserting cooperative: {e}")
         return {"error": "Error inserting cooperative"}
 
-def verify_credentials(email, password):
-    query = "SELECT id, cooperativename, email, password, coop_id FROM cooperative WHERE email = %s"
-    db = current_app.db
-    result = db.read(query, (email,))
+def verify_credentials(email, password,typed):
+    print(typed)
+    if(typed=='member'):
+        print("am here")
+        query = "SELECT * FROM cooperative_members WHERE email = %s"
+        db = current_app.db
+        result = db.read(query, (email,))
+        
+        if result:
+            user = result[0]
+            stored_password = user['password']
+            print(stored_password +" "+hash_password(password))
+            if stored_password == hash_password(password):
+                return {
+                    "id": user['id'],
+                    "fullname": user['fullname'],
+                    "email": user['email'],
+                    "staff_id": user['staff_id']
+                }
     
-    if result:
-        user = result[0]
-        stored_password = user['password']
-        if stored_password == hash_password(password):
-            return {
-                "id": user['id'],
-                "cooperativename": user['cooperativename'],
-                "email": user['email'],
-                "coop_id": user['coop_id']
-            }
+    else:
+        query = "SELECT id, cooperativename, email, password, coop_id FROM cooperative WHERE email = %s"
+        db = current_app.db
+        result = db.read(query, (email,))
+        
+        if result:
+            user = result[0]
+            stored_password = user['password']
+            if stored_password == hash_password(password):
+                return {
+                    "id": user['id'],
+                    "cooperativename": user['cooperativename'],
+                    "email": user['email'],
+                    "coop_id": user['coop_id']
+                }
     
     return None
 def create_member(fullname, email, phoneno, address, staff_id, dob, gender, cooperative_id, nok_name, nok_phone, nok_relationship, bank_name, account_number, sort_code, salary_number, password=None):
