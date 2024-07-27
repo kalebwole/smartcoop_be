@@ -204,7 +204,9 @@ def create_cooperative_member():
     
 @main_bp.route('/cooperative/members', methods=['GET'])
 def get_all_members():
-    members = fetch_all_members()
+    data = request.get_json()
+    coop_id  = data.get('coop_id')
+    members = fetch_all_members(coop_id)
     
     if isinstance(members, list):
         return jsonify(members), 200

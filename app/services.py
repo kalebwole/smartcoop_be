@@ -86,9 +86,27 @@ def create_member(fullname, email, phoneno, address, staff_id, dob, gender, coop
     except Exception as e:
         print(f"Error creating member: {e}")
         return {"error": "Error creating member"}
-def fetch_all_members():
+def fetch_all_members(coop_id):
     
     db = current_app.db
+    print(coop_id)
+    queryFetch = "SELECT user_id FROM member_cooperatives WHERE cooperative_id = %s"
+    # print(queryFetch)
+    params = (coop_id,)
+    getIDS = db.read(queryFetch,params)
+    # print(getIDS)
+    IDS=""
+    for each in getIDS:
+        if IDS == "":
+            IDS = each['user_id']
+        else:
+            IDS = IDS+","+each['user_id']
+        print(IDS)
+        
+
+
+    return IDS
+
     query = "SELECT id, fullname, email, phoneno, address, staff_id, dob, gender  FROM cooperative_members"
     
     try:
