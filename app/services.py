@@ -51,7 +51,8 @@ def verify_credentials(email, password,typed):
                     "id": user['id'],
                     "fullname": user['fullname'],
                     "email": user['email'],
-                    "staff_id": user['staff_id']
+                    "staff_id": user['staff_id'],
+                    "wallet":user['wallet']
                 }
     
     else:
@@ -822,3 +823,43 @@ def subscribeMember(coop_id,staff_id,amount):
     except Exception as e:
 
         return []
+def savingsPlan(staff_id,savings_id,frequency,amount,coop_id,title):
+    try:
+        db = current_app.db
+        query = """
+                INSERT INTO savingsplan (staff_id,savings_id,frequency,amount,coop_id,title) VALUES (%s,%s,%s,%s,%s,%s)
+            """
+        params = (staff_id,savings_id,frequency,amount,coop_id,title)
+        db.create(query,params)
+
+        return 0
+    except Exception as e:
+            print(e)
+            return [] 
+
+def getsavingsPlan(staff_id,coop_id):
+    try:
+        print(staff_id+" "+coop_id)
+        db = current_app.db
+        query = """
+                SELECT * FROM savingsplan WHERE coop_id = %s and staff_id = %s
+                """
+        params = (coop_id,staff_id,)
+        result = db.read(query,params)
+
+        return result
+    except Exception as e:
+            print(e)
+            return []
+def getTransactions(coop_id,staff_id,type):
+        try:
+            db = current_app.db
+            query = """
+                    SELECT * FROM transactions WHERE coop_id = %s and staff_id = %s and type=%s  
+                    """
+            params = (coop_id,staff_id,type,)
+            result = db.read(query,params)
+            return result
+        except Exception as e:
+            return []
+

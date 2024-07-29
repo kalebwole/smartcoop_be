@@ -1,6 +1,7 @@
 
 from flask import Blueprint, request, jsonify, render_template, current_app
-from .services import fetchLoan,getCoopProfiles,insert_cooperative, verify_credentials, create_member, fetch_all_members, delete_member, create_loan_type,delete_loan_type,fetch_loan_types, loanCalculator,createLoan, fetch_loans,update_loans, create_savings_type, fetch_savings_types, newSavings,fetch_savings,getProfiles,updateCoopProfiles,fetchAllloans, createtransactions,repayLoan,fetch_announcement,searchUsers,getUserCooptives,subscribeMember
+from .services import fetchLoan,getCoopProfiles,insert_cooperative, verify_credentials, create_member, fetch_all_members, delete_member, create_loan_type,delete_loan_type,fetch_loan_types, loanCalculator,createLoan, fetch_loans,update_loans, create_savings_type, fetch_savings_types, newSavings,fetch_savings,getProfiles,updateCoopProfiles,fetchAllloans, createtransactions,repayLoan,fetch_announcement,searchUsers,getUserCooptives,subscribeMember,savingsPlan,getsavingsPlan,getTransactions
+
 import random
 from .crypt import encrypt_text, decrypt_text
 from .emailService import send_email
@@ -55,6 +56,9 @@ def dashboard():
 @main_bp.route('/dashboard/add_member', methods=['GET'])
 def add_member():
     return render_template('add_member.html')
+@main_bp.route('/memberpaypalsavings', methods=['GET'])
+def memberpaypalsavings():
+    return render_template('memberpaypalsavings.html')
 @main_bp.route('/dashboard/view_member', methods=['GET'])
 def view_member():
     return render_template('view_member.html')
@@ -641,6 +645,60 @@ def memberSubscribe():
 
     try:
         result =  subscribeMember(coop_id,staff_id,amount)
+        return jsonify(result), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+@main_bp.route('/members/savingsplan/create', methods=['POST']) 
+def membersSavingsPlans():
+    data = request.get_json()
+    
+    staff_id = data.get('staff_id')
+    coop_id = data.get('coop_id')
+    amount = data.get('amount')
+    frequency = data.get("frequency")
+    savings_id = data.get("savings_id")
+    title = data.get("title")
+  
+    if not all([title,staff_id,coop_id,amount,frequency,savings_id ]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        result =  savingsPlan(staff_id,savings_id,frequency,amount,coop_id,title)
+        return jsonify(result), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@main_bp.route('/members/savingsplan/fetch', methods=['POST']) 
+def getmembersSavingsPlans():
+    data = request.get_json()
+    
+    staff_id = data.get('staff_id')
+    coop_id = data.get('coop_id')
+    
+    if not all([staff_id,coop_id ]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        result = getsavingsPlan(staff_id,coop_id)
+        return jsonify(result), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@main_bp.route('/transactions', methods=['POST']) 
+def getalltransactions():
+    data = request.get_json()
+    
+    staff_id = data.get('staff_id')
+    coop_id = data.get('coop_id')
+    type = data.get('type')
+
+
+    if not all([staff_id,coop_id]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        result = getTransactions(coop_id,staff_id,type)
         return jsonify(result), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500

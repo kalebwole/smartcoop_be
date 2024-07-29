@@ -75,7 +75,7 @@
                 data-bs-toggle="modal"
                 data-bs-target="#switchCoopModal"
               >
-                Make Savings
+                Apply For Loan
               </button>
             </div>
             <div class="col-6 text-end">
@@ -84,15 +84,15 @@
                 data-bs-toggle="modal"
                 data-bs-target="#addCoopModal"
               >
-                Add Savings Plan
+                Loan Calculator
               </button>
-              <button
+              <!-- <button
                 class="btn btn-primary btn-small mt-2"
                 data-bs-toggle="modal"
                 data-bs-target="#requestWithdrawModal"
               >
                 Request Withdraw
-              </button>
+              </button> -->
             </div>
           </div>
           <!-- Bottom Row -->
@@ -100,7 +100,7 @@
             <div class="col-6">
               <div class="card bg-light">
                 <div class="card-body text-center">
-                  <h5 class="card-title">Savings Total</h5>
+                  <h5 class="card-title">Total Loan</h5>
                   <p class="card-text" id="savingsShow">$0.00</p>
                 </div>
               </div>
@@ -108,7 +108,7 @@
             <div class="col-6">
               <div class="card bg-light">
                 <div class="card-body text-center">
-                  <h5 class="card-title">Savings Plan</h5>
+                  <h5 class="card-title">Amount To Repay</h5>
                   <p class="card-text" id="showSaveplan">0</p>
                 </div>
               </div>
@@ -162,7 +162,9 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="switchCoopModalLabel">Make Savings</h5>
+            <h5 class="modal-title" id="switchCoopModalLabel">
+              Loan Application
+            </h5>
             <button
               type="button"
               class="btn-close"
@@ -177,15 +179,22 @@
           savings_id = data.get("savings_id")
           title = data.get("title") -->
           <div class="modal-body">
-            <!-- Modal body content for Switch Coop -->
-            <p>Select the Savings Plan</p>
-            <select
-              class="form-select"
-              onchange="payPlan(this.value)"
-              id="coopSelect"
-            >
-              <option selected>Select Coop</option>
-            </select>
+            <form>
+              <div class="mb-3">
+                <label for="coopName" class="form-label">Loan Type</label>
+                <select name="loanty" class="form-control" id="loanType">
+                  <option></option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="coopName" class="form-label">Amount</label>
+                <input name="loanty" class="form-control" id="amountapply" />
+              </div>
+              <div class="mb-3">
+                <label for="coopName" class="form-label">Tenure</label>
+                <input name="loanty" class="form-control" id="tenureapply" />
+              </div>
+            </form>
           </div>
           <div class="modal-footer">
             <button
@@ -195,6 +204,7 @@
             >
               Close
             </button>
+            <button type="button" class="btn btn-primary">Apply</button>
           </div>
         </div>
       </div>
@@ -211,9 +221,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="addCoopModalLabel">
-              Create A Savings Plan
-            </h5>
+            <h5 class="modal-title" id="addCoopModalLabel">Loan Calculator</h5>
             <button
               type="button"
               class="btn-close"
@@ -225,36 +233,18 @@
             <!-- Modal body content for Add Coop -->
             <form>
               <div class="mb-3">
-                <label for="coopName" class="form-label">Title</label>
-                <input name="title" class="form-control" id="title" />
-              </div>
-              <div class="mb-3">
-                <label for="coopName" class="form-label">Amount</label>
-                <input name="amount" class="form-control" id="amount" />
-              </div>
-
-              <div class="mb-3">
-                <label for="coopName" class="form-label">Savings Type</label>
-                <select
-                  name="savingstype"
-                  class="form-control"
-                  id="savingstyped"
-                >
+                <label for="coopName" class="form-label">Loan Type</label>
+                <select name="loanty" class="form-control" id="loanType">
                   <option></option>
                 </select>
               </div>
               <div class="mb-3">
-                <label for="coopName" class="form-label"
-                  >What day of the month?</label
-                >
-                <input
-                  name="frequency"
-                  type="number"
-                  class="form-control"
-                  id="frequency"
-                  min="1"
-                  max="31"
-                />
+                <label for="coopName" class="form-label">Amount</label>
+                <input name="loanty" class="form-control" id="amountcalc" />
+              </div>
+              <div class="mb-3">
+                <label for="coopName" class="form-label">Tenure</label>
+                <input name="loanty" class="form-control" id="tenurecalc" />
               </div>
             </form>
           </div>
@@ -266,7 +256,57 @@
             >
               Close
             </button>
-            <a class="btn btn-primary" onclick="createPlan()">Create Plan</a>
+            <a class="btn btn-primary" onclick="createPlan()">Calculate Plan</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loan Calculation Result Modal -->
+    <div
+      class="modal fade"
+      id="loanCalculationResultModal"
+      tabindex="-1"
+      aria-labelledby="loanCalculationResultModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="loanCalculationResultModalLabel">
+              Loan Calculation Result
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Month</th>
+                  <th scope="col">Amount Received</th>
+                  <th scope="col">Monthly Interest Repayment</th>
+                  <th scope="col">Monthly Principal Repayment</th>
+                  <th scope="col">Total Monthly Repayment</th>
+                </tr>
+              </thead>
+              <tbody id="loanCalculationResultTable">
+                <!-- Populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
           </div>
         </div>
       </div>
@@ -399,7 +439,6 @@
         const raw = JSON.stringify({
           coop_id: coopData.coopData.coop_id,
           staff_id: user.user.staff_id,
-          type: "savings",
         });
 
         const requestOptions = {
@@ -422,7 +461,7 @@
                 <!-- FontAwesome icon for home -->
               </div>
               <div class="item-details">
-                <div class="item-title">${item.type}</div>
+                <div class="item-title">${item.type}Houses Purchase</div>
                 <div class="item-subtitle">${item.date_added}</div>
               </div>
               <div class="item-price">$${item.amount}</div>
@@ -475,22 +514,17 @@
         // window.location.reload();
       }
       function createPlan() {
-        const savings_id = document.getElementById("savingstyped").value;
-        const frequency = document.getElementById("frequency").value;
-        const amount = document.getElementById("amount").value;
-        const staff_id = user.user.staff_id;
-        const coop_id = coopData.coopData.coop_id;
-        const title = document.getElementById("title").value;
+        const loanType = document.getElementById("loanType").value;
+        const principal = document.getElementById("amountcalc").value;
+        const tenure = document.getElementById("tenurecalc").value;
+
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
         const raw = JSON.stringify({
-          coop_id: coopData.coopData.coop_id,
-          staff_id: staff_id,
-          amount: amount,
-          frequency: frequency,
-          savings_id: savings_id,
-          title: title,
+          loan_type: loanType,
+          principal: principal,
+          tenure: tenure,
         });
 
         const requestOptions = {
@@ -501,102 +535,76 @@
         };
 
         fetch(
-          "http://localhost:5000/members/savingsplan/create",
+          "http://localhost:5000/cooperative/loan/calculator",
           requestOptions
         )
           .then((response) => response.json())
           .then((result) => {
-            storedCoopData = result;
-            // console.log(result);
-            window.location.reload();
+            populateLoanCalculationResult(result);
+            const loanCalculationResultModal = new bootstrap.Modal(
+              document.getElementById("loanCalculationResultModal")
+            );
+            loanCalculationResultModal.show();
           })
-          .catch((error) => {
-            console.error("Error:", error);
-            window.location.reload();
-            // var errorModal = new bootstrap.Modal(
-            //   document.getElementById("errorModal")
-            // );
-            // errorModal.show();
-          });
-        //nw
+          .catch((error) => console.error(error));
       }
+
+      function populateLoanCalculationResult(data) {
+        const tableBody = document.getElementById("loanCalculationResultTable");
+        tableBody.innerHTML = ""; // Clear any existing rows
+
+        data.forEach((item) => {
+          const row = document.createElement("tr");
+
+          const monthCell = document.createElement("td");
+          monthCell.textContent = item.month;
+          row.appendChild(monthCell);
+
+          const amountReceivedCell = document.createElement("td");
+          amountReceivedCell.textContent = item.amount_received;
+          row.appendChild(amountReceivedCell);
+
+          const monthlyInterestRepaymentCell = document.createElement("td");
+          monthlyInterestRepaymentCell.textContent =
+            item.monthly_interest_repayment;
+          row.appendChild(monthlyInterestRepaymentCell);
+
+          const monthlyPrincipalRepaymentCell = document.createElement("td");
+          monthlyPrincipalRepaymentCell.textContent =
+            item.monthly_principal_repayment;
+          row.appendChild(monthlyPrincipalRepaymentCell);
+
+          const totalMonthlyRepaymentCell = document.createElement("td");
+          totalMonthlyRepaymentCell.textContent = item.monthly_repayment;
+          row.appendChild(totalMonthlyRepaymentCell);
+
+          tableBody.appendChild(row);
+        });
+      }
+
       document.addEventListener("DOMContentLoaded", function () {
         // console.log(coopData);
         // coopSelect
-        const myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-
-        const raw = JSON.stringify({
-          coop_id: coopData.coopData.coop_id,
-          page: 1,
-          per_page: 100,
-        });
-
-        const requestOptions = {
+        fetch("http://localhost:5000/cooperative/loantype", {
           method: "POST",
-          headers: myHeaders,
-          body: raw,
-          redirect: "follow",
-        };
-
-        fetch("http://localhost:5000/cooperative/savingstype", requestOptions)
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            coop_id: coopData.coopData.coop_id,
+            per_page: 10,
+            page: 1,
+          }),
+        })
           .then((response) => response.json())
-          .then((result) => {
-            storedCoopData = result;
-            const coopSelect = document.getElementById("savingstyped");
-            coopSelect.innerHTML = `<option selected>Select Savings Type</option>`;
-            result.forEach((coop) => {
-              console.log(coop);
+          .then((data) => {
+            const loanTypeSelect = document.getElementById("loanType");
+            data.forEach((loanType) => {
               const option = document.createElement("option");
-              option.value = coop.title;
-              option.textContent = coop.title;
-              coopSelect.appendChild(option);
+              option.value = loanType.id;
+              option.textContent = loanType.title;
+              loanTypeSelect.appendChild(option);
             });
           })
-          .catch((error) => {
-            console.error("Error:", error);
-            // var errorModal = new bootstrap.Modal(
-            //   document.getElementById("errorModal")
-            // );
-            // errorModal.show();
-          });
-
-        const raw1 = JSON.stringify({
-          coop_id: coopData.coopData.coop_id,
-          staff_id: user.user.staff_id,
-        });
-
-        const requestOptions1 = {
-          method: "POST",
-          headers: myHeaders,
-          body: raw1,
-          redirect: "follow",
-        };
-        fetch(
-          "http://localhost:5000/members/savingsplan/fetch",
-          requestOptions1
-        )
-          .then((response) => response.json())
-          .then((result) => {
-            savingsPlanData = result;
-            document.getElementById("showSaveplan").innerText = result.length;
-            const coopSelect = document.getElementById("coopSelect");
-            coopSelect.innerHTML = `<option selected>Select Savings plan</option>`;
-            result.forEach((coop) => {
-              console.log(coop);
-              const option = document.createElement("option");
-              option.value = coop.id;
-              option.textContent = coop.title;
-              coopSelect.appendChild(option);
-            });
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-            // var errorModal = new bootstrap.Modal(
-            //   document.getElementById("errorModal")
-            // );
-            // errorModal.show();
-          });
+          .catch((error) => console.error("Error fetching loan types:", error));
       });
     </script>
   </body>
