@@ -1,6 +1,6 @@
 
 from flask import Blueprint, request, jsonify, render_template, current_app
-from .services import fetchLoan,getCoopProfiles,insert_cooperative, verify_credentials, create_member, fetch_all_members, delete_member, create_loan_type,delete_loan_type,fetch_loan_types, loanCalculator,createLoan, fetch_loans,update_loans, create_savings_type, fetch_savings_types, newSavings,fetch_savings,getProfiles,updateCoopProfiles,fetchAllloans, createtransactions,repayLoan,fetch_announcement
+from .services import fetchLoan,getCoopProfiles,insert_cooperative, verify_credentials, create_member, fetch_all_members, delete_member, create_loan_type,delete_loan_type,fetch_loan_types, loanCalculator,createLoan, fetch_loans,update_loans, create_savings_type, fetch_savings_types, newSavings,fetch_savings,getProfiles,updateCoopProfiles,fetchAllloans, createtransactions,repayLoan,fetch_announcement,searchUsers,getUserCooptives,subscribeMember
 import random
 from .crypt import encrypt_text, decrypt_text
 from .emailService import send_email
@@ -15,6 +15,12 @@ main_bp = Blueprint('main', __name__)
 @main_bp.route('/', methods=['GET'])
 def hello():
     return render_template('default.html')
+@main_bp.route('/memberssavings', methods=['GET'])
+def membersavings():
+    return render_template('memberssavings.html')
+@main_bp.route('/membersloans', methods=['GET'])
+def membersloans():
+    return render_template('membersloans.html')
 @main_bp.route('/dashboard/announcement', methods=['GET'])
 def viewannounce():
     return render_template('annoucementview.html')
@@ -28,7 +34,9 @@ def member_sign_in():
 @main_bp.route('/members', methods=['GET'])
 def member_dashboard():
     return render_template('membersdashboard.html')
-
+@main_bp.route('/members-payment-paypal', methods=['GET'])
+def paypal_member():
+    return render_template('memberpaypal.html')
 @main_bp.route('/sign-up', methods=['GET'])
 def signupView():
     return render_template('signup.html')
@@ -587,4 +595,52 @@ def new_announcement():
         return jsonify({"message":"Created successfully"}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@main_bp.route('/search/users', methods=['POST'])
+def searchUser():
+    data = request.get_json()
     
+    staff_id = data.get('staff_id')
+    coop_id = data.get('coop_id')
+  
+    if not all([staff_id ]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        result = searchUsers(staff_id,coop_id)
+        return jsonify(result), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@main_bp.route('/members/coop', methods=['POST'])
+def getUsersCoop():
+    data = request.get_json()
+    
+    staff_id = data.get('staff_id')
+    # coop_id = data.get('coop_id')
+  
+    if not all([staff_id ]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        result =  getUserCooptives(staff_id)
+        return jsonify(result), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@main_bp.route('/members/subscribe', methods=['POST'])
+def memberSubscribe():
+    data = request.get_json()
+    
+    staff_id = data.get('staff_id')
+    coop_id = data.get('coop_id')
+    amount = data.get('amount')
+  
+    if not all([staff_id,coop_id ]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        result =  subscribeMember(coop_id,staff_id,amount)
+        return jsonify(result), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

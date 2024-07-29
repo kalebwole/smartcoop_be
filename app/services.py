@@ -109,7 +109,7 @@ def create_member(fullname, email, phoneno, address, staff_id, dob, gender, coop
 def fetch_all_members(coop_id):
     
     db = current_app.db
-    print(coop_id)
+    # print(coop_id)
     queryFetch = "SELECT user_id FROM member_cooperatives WHERE cooperative_id = %s"
     # print(queryFetch)
     params = (coop_id,)
@@ -716,6 +716,37 @@ def repayLoan(loan_id,amount):
      except Exception as e:
         print(f"Error fetching loan types: {e}")
         return []
+def searchUsers(staff_id,coop_id):
+    try:
+        db = current_app.db
+     
+        # add to the users wallet
+        getLoanData = """
+                SELECT * FROM member_cooperatives where cooperative_id = %s  and user_id = %s
+                        """
+        getParamsUser = (coop_id,staff_id,)
+
+
+        checkUser = db.read(getLoanData,getParamsUser)
+        # return checkUser
+        if checkUser:
+            staff = checkUser[0]['user_id']
+            # return staff
+            getUserData = """
+                SELECT * FROM cooperative_members where staff_id = %s
+                        """
+            getParams = (staff,)
+
+
+            users = db.read(getUserData,getParams)
+
+            return users
+
+        return []
+    except Exception as e:
+        print(f"Error fetching loan types: {e}")
+        return []
+    
 def fetch_announcement(coop_id):
     try:
         db = current_app.db
@@ -729,4 +760,65 @@ def fetch_announcement(coop_id):
         return loanRepayment
     except Exception as e:
         print(f"Error fetching loan types: {e}")
+        return []
+def getUserCooptives(staff_id):
+    try:
+        db = current_app.db
+     
+        # add to the users wallet
+        getCoops = """
+                SELECT * FROM member_cooperatives where user_id = %s 
+                        """
+        getParamscoops = (staff_id,)
+        getCoops = db.read(getCoops,getParamscoops)
+
+        response = []
+        for each in getCoops:
+             
+             getCoopData = """
+                SELECT * FROM cooperative WHERE coop_id = %s 
+                        """
+             getParamscoopsdata = (each['cooperative_id'],)
+             coopsData = db.read(getCoopData,getParamscoopsdata)
+             response.append({"coopData":coopsData[0],"subscription":each})
+
+             
+        return response
+            
+
+
+    
+        # string_list = IDS.strip(',').split(',')
+        # placeholders = ', '.join(['%s'] * len(string_list))
+        # query = f"SELECT * FROM cooperative WHERE coop_id IN ({placeholders})"
+        # # query = "SELECT id, fullname, email, phoneno, address, staff_id, dob, gender   FROM cooperative_members WHERE %s IN staff_id"
+        # # print(query)
+        # try:
+        #     # par = (IDS,)
+        #     members = db.read(query, string_list)
+        #     return members
+        # except Exception as e:
+        #     print(f"Error fetching members: {e}")
+        #     return {"error": "Error fetching members"}
+
+        #     return loanRepayment
+    except Exception as e:
+        print(f"Error fetching loan types: {e}")
+        return []
+def subscribeMember(coop_id,staff_id,amount):
+    try:
+        db = current_app.db
+        print(coop_id)
+        updateQuery = """
+                        UPDATE member_cooperatives SET membership_status = 'subscribed' WHERE user_id = %s and cooperative_id = %s  
+                    """
+        paramsQuerys = (staff_id,coop_id,)
+
+        db.update(updateQuery,paramsQuerys)
+
+        createtransactions(coop_id,staff_id,amount,"credit","user-coop","subscription")
+
+        return "done"
+    except Exception as e:
+
         return []

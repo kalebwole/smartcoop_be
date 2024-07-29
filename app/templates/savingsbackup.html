@@ -65,9 +65,7 @@
                 id="staff_id"
                 name="user_id"
                 required
-                onblur="LostFocus()"
               />
-              <small id="staffIdFeedback" class="form-text"></small>
             </div>
             <div class="form-group">
               <label for="amount">Amount</label>
@@ -112,9 +110,7 @@
               </select>
             </div>
 
-            <button type="submit" id="sob" class="btn btn-primary">
-              Submit
-            </button>
+            <button type="submit" class="btn btn-primary">Submit</button>
           </form>
         </div>
       </div>
@@ -126,61 +122,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
-  const disableForm = (disabled) => {
-    document.getElementById("principal").disabled = disabled;
-    // document.getElementById("tenure").disabled = disabled;
-    document.getElementById("loanType").disabled = disabled;
-    document.getElementById("sob").disabled = disabled;
-    // form.querySelector("button[type='submit']").disabled = disabled;
-  };
-  const showFeedback = (message, className) => {
-    const feedbackElement = document.getElementById("staffIdFeedback");
-    feedbackElement.textContent = message;
-    feedbackElement.className = `form-text ${className}`;
-  };
-  function LostFocus() {
-    const staffIdInput = document.getElementById("staff_id");
-
-    const staffId = staffIdInput.value.trim();
-    if (staffId === "") {
-      showFeedback("Staff ID is required.", "text-danger");
-      disableForm(true);
-      return;
-    }
-    const user = JSON.parse(localStorage.getItem("user"));
-    const coop_id = user ? user.user.coop_id : "";
-    const raw = JSON.stringify({
-      staff_id: staffId,
-      coop_id: coop_id,
-    });
-    fetch(`http://localhost:5000/search/users`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: raw,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data[0]["fullname"]) {
-          showFeedback(
-            "Staff ID is valid -" + data[0]["fullname"],
-            "text-success"
-          );
-          disableForm(false);
-        } else {
-          showFeedback("Staff ID not found.", "text-danger");
-          disableForm(true);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching staff ID:", error);
-        showFeedback("Error fetching staff ID.", "text-danger");
-        disableForm(true);
-      });
-  }
-  disableForm(true);
-
   document.addEventListener("DOMContentLoaded", () => {
     // Fetch loan data
     const user = JSON.parse(localStorage.getItem("user"));
@@ -359,5 +300,154 @@
     }, 3000);
   }
 </script>
+<!-- <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // Fetch loan data
+    const user = JSON.parse(localStorage.getItem("user"));
+    const coop_id = user ? user.user.coop_id : "";
+
+    fetch("http://localhost:5000/cooperative/loans", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        coop_id: coop_id,
+        per_page: 10,
+        page: 1,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const loanList = document.getElementById("loanList");
+        data.forEach((loan) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+          <td>${loan.id}</td>
+          <td>${loan.staff_id}</td>
+          <td>${loan.principal}</td>
+          <td>${loan.total_interest}</td>
+          <td>${loan.tenure}</td>
+          <td>${loan.total_loan}</td>
+          <td>${loan.amount_paid}</td>
+          <td>${loan.amount_disbursed}</td>
+          <td>${loan.request_date}</td>
+          <td>${loan.approved_status}</td>
+          <td>${loan.status}</td>
+          <td>
+            
+            <button class="btn btn-danger btn-sm" onclick="deleteLoan(${loan.id})"><i class="fas fa-trash"></i></button>
+          </td>
+        `;
+          loanList.appendChild(row);
+        });
+      })
+      .catch((error) => console.error("Error fetching loan data:", error));
+
+    // Fetch loan types for the dropdown
+    fetch("http://localhost:5000/cooperative/loantype", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        coop_id: coop_id,
+        per_page: 10,
+        page: 1,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const loanTypeSelect = document.querySelector(
+          "select[name='loan_type']"
+        );
+        data.forEach((loanType) => {
+          const option = document.createElement("option");
+          option.value = loanType.id;
+          option.textContent = loanType.title;
+          loanTypeSelect.appendChild(option);
+        });
+      })
+      .catch((error) => console.error("Error fetching loan types:", error));
+
+    // Handle form submission for applying for a loan
+    const form = document.getElementById("applyLoanForm");
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+
+      if (user && user.user.coop_id) {
+        data.coop_id = user.user.coop_id;
+      } else {
+        console.error("Failed to retrieve coop_id from localStorage.");
+        return;
+      }
+
+      fetch("http://localhost:5000/cooperative/loan/apply", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Success:", data);
+          $("#applyLoanModal").modal("hide");
+          showAlert("Loan application submitted successfully", "alert-success");
+          // setTimeout(() => {
+          //   location.reload();
+          // }, 2000);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          showAlert(
+            "Failed to submit loan application. Please try again.",
+            "alert-danger"
+          );
+        });
+    });
+  });
+
+  function deleteLoan(id) {
+    fetch("http://localhost:5000/cooperative/loantype/delete", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: id }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Success:", data);
+        showAlert("Loan deleted successfully", "alert-success");
+        setTimeout(() => {
+          location.reload();
+        }, 2000);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        showAlert("Failed to delete loan. Please try again.", "alert-danger");
+      });
+  }
+
+  function showAlert(message, className) {
+    const alertDiv = document.createElement("div");
+    alertDiv.className = `alert ${className}`;
+    alertDiv.appendChild(document.createTextNode(message));
+
+    const container = document.querySelector(".container");
+    container.insertBefore(alertDiv, container.firstChild);
+
+    setTimeout(() => {
+      alertDiv.remove();
+    }, 3000);
+  }
+</script> -->
 
 {% include 'includes/footer.html' %}

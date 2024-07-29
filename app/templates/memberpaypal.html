@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PWA PayPal Card Payment</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
+    <script src="https://www.paypal.com/sdk/js?client-id=AfhwU0miSQdsbgBWf9-sHXmB7e7P8LAa3SaiH8L7q8xRQ7MpbBIltH1GUnkBZzOdZ3ILk4gxUDvl69R-&components=buttons,hosted-fields"></script>
+    <style>
+      .card-fields-container div {
+        margin-bottom: 15px;
+      }
+      .submit-button {
+        background-color: #0070ba;
+        color: white;
+      }
+      .submit-button:hover {
+        background-color: #005ea6;
+      }
+      .container {
+        max-width: 500px;
+        margin-top: 50px;
+      }
+      @media (max-width: 576px) {
+        .container {
+          margin-top: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="text-center">PayPal Card Payment</h1>
+
+      <div class="card mt-3">
+        <div class="card-body">
+          <!-- PayPal Button Container -->
+          <div id="paypal-button-container" class="mb-3"></div>
+
+          <!-- Card Fields Container -->
+          <!-- <div id="card-fields-container" class="card-fields-container">
+            <div id="card-number" class="form-control"></div>
+            <div id="card-expiry" class="form-control"></div>
+            <div id="card-cvv" class="form-control"></div>
+          </div> -->
+
+          <!-- Submit Button -->
+          <!-- <button id="submit-button" class="btn submit-button btn-block mt-3">
+            Pay with Paypal <i class="fas fa-phone"></i>
+          </button> -->
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const user = JSON.parse(localStorage.getItem("user"));
+      const coopData = JSON.parse(localStorage.getItem("coop"));
+
+      function subscribe(staff_id, coop_id, amount) {
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        const raw = JSON.stringify({
+          staff_id: `${staff_id}`,
+          coop_id: `${coop_id}`,
+          amount: `${amount}`,
+        });
+
+        const requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+          redirect: "follow",
+        };
+
+        fetch("http://localhost:5000/members/subscribe", requestOptions)
+          .then((response) => response.text())
+          .then((result) => (windows.location.href = "/members"))
+          .catch((error) => console.error(error));
+      }
+
+      paypal
+        .Buttons({
+          createOrder: function (data, actions) {
+            return actions.order.create({
+              purchase_units: [
+                {
+                  amount: {
+                    value: coopData.coopData.registration_fee,
+                  },
+                },
+              ],
+            });
+          },
+          onApprove: function (data, actions) {
+            return actions.order.capture().then(function (details) {
+              subscribe(
+                user.user.staff_id,
+                coopData.coopData.coop_id,
+                coopData.coopData.registration_fee
+              );
+              alert(
+                "Transaction completed by " + details.payer.name.given_name
+              );
+              setTimeout(() => {
+                window.location.href = "/sign-in-member";
+              }, 3000);
+
+              //   alert(
+              //     "Transaction completed by " + details.payer.name.given_name
+              //   );
+            });
+          },
+        })
+        .render("#paypal-button-container");
+
+      paypal.HostedFields.render({
+        createOrder: function () {
+          return actions.order.create({
+            purchase_units: [
+              {
+                amount: {
+                  value: coopData.coopData.registration_fee,
+                },
+              },
+            ],
+          });
+        },
+        styles: {
+          input: {
+            "font-size": "14px",
+          },
+          "input.invalid": {
+            color: "red",
+          },
+          "input.valid": {
+            color: "green",
+          },
+        },
+        fields: {
+          number: {
+            selector: "#card-number",
+            placeholder: "Card Number",
+          },
+          cvv: {
+            selector: "#card-cvv",
+            placeholder: "CVV",
+          },
+          expirationDate: {
+            selector: "#card-expiry",
+            placeholder: "MM/YY",
+          },
+        },
+      }).then(function (hostedFields) {
+        document
+          .querySelector("#submit-button")
+          .addEventListener("click", function () {
+            hostedFields
+              .submit({
+                // Add any additional parameters or options here
+              })
+              .then(function (orderId) {
+                console.log("Order ID:", orderId);
+              })
+              .catch(function (err) {
+                console.error(err);
+              });
+          });
+      });
+    </script>
+  </body>
+</html>

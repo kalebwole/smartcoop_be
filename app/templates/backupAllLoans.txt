@@ -62,7 +62,6 @@
         </div>
         <div class="modal-body">
           <form id="applyLoanForm">
-            <div id="showmessage"></div>
             <div class="form-group">
               <label for="staff_id">Staff ID</label>
               <input
@@ -72,7 +71,6 @@
                 name="staff_id"
                 required
               />
-              <small id="staffIdFeedback" class="form-text"></small>
             </div>
             <div class="form-group">
               <label for="principal">Principal</label>
@@ -82,7 +80,6 @@
                 id="principal"
                 name="principal"
                 required
-                disabled
               />
             </div>
             <div class="form-group">
@@ -93,7 +90,6 @@
                 id="tenure"
                 name="tenure"
                 required
-                disabled
               />
             </div>
             <div class="form-group">
@@ -103,15 +99,12 @@
                 class="form-control"
                 id="loanType"
                 required
-                disabled
               >
                 <option>Select Loan category</option>
               </select>
             </div>
 
-            <button type="submit" class="btn btn-primary" disabled>
-              Submit
-            </button>
+            <button type="submit" class="btn btn-primary">Submit</button>
           </form>
         </div>
       </div>
@@ -262,85 +255,17 @@
             }, 3000);
           } else {
             console.error("Error:", data);
-            showAlert(data.error || "An error occurred", "alert-danger");
-          }
-        })
-        .catch((error) =>
-          console.error("Error submitting loan application:", error)
-        );
-    });
-
-    // Staff ID validation
-    const staffIdInput = document.getElementById("staff_id");
-    staffIdInput.addEventListener("blur", () => {
-      const staffId = staffIdInput.value.trim();
-      if (staffId === "") {
-        showFeedback("Staff ID is required.", "text-danger");
-        disableForm(true);
-        return;
-      }
-      const user = JSON.parse(localStorage.getItem("user"));
-      const coop_id = user ? user.user.coop_id : "";
-      const raw = JSON.stringify({
-        staff_id: staffId,
-        coop_id: coop_id,
-      });
-      fetch(`http://localhost:5000/search/users`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: raw,
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data[0]["fullname"]) {
-            showFeedback(
-              "Staff ID is valid -" + data[0]["fullname"],
-              "text-success"
-            );
-            disableForm(false);
-          } else {
-            showFeedback("Staff ID not found.", "text-danger");
-            disableForm(true);
+            showAlert(data.error, "alert-danger");
           }
         })
         .catch((error) => {
-          console.error("Error fetching staff ID:", error);
-          showFeedback("Error fetching staff ID.", "text-danger");
-          disableForm(true);
+          console.error("Error:", error);
+          showAlert(
+            "Failed to submit loan application. Please try again.",
+            "alert-danger"
+          );
         });
     });
-
-    // Function to show feedback message
-    const showFeedback = (message, className) => {
-      const feedbackElement = document.getElementById("staffIdFeedback");
-      feedbackElement.textContent = message;
-      feedbackElement.className = `form-text ${className}`;
-    };
-
-    // Function to disable/enable form fields
-    const disableForm = (disabled) => {
-      document.getElementById("principal").disabled = disabled;
-      document.getElementById("tenure").disabled = disabled;
-      document.getElementById("loanType").disabled = disabled;
-      form.querySelector("button[type='submit']").disabled = disabled;
-    };
-
-    // Function to show alert message
-    const showAlert = (message, className) => {
-      // const alert = document.createElement("div");
-      // alert.className = `alert ${className}`;
-      // alert.textContent = message;
-      // document.body.appendChild(alert);
-      document.getElementById(
-        "showmessage"
-      ).innerHTML = `<div class="alert alert-danger">${message}</div>;`;
-      setTimeout(() => {
-        document.getElementById("showmessage").innerHTML = "";
-        // alert.remove();
-      }, 3000);
-    };
   });
 
   function deleteLoan(id) {

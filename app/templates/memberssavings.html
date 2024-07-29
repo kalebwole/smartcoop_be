@@ -46,7 +46,7 @@
                 data-bs-toggle="modal"
                 data-bs-target="#switchCoopModal"
               >
-                Switch Coop
+                Make Savings
               </button>
             </div>
             <div class="col-6 text-end">
@@ -55,7 +55,7 @@
                 data-bs-toggle="modal"
                 data-bs-target="#addCoopModal"
               >
-                Add Coop
+                Add Savings Plan
               </button>
             </div>
           </div>
@@ -72,8 +72,8 @@
             <div class="col-6">
               <div class="card bg-light">
                 <div class="card-body text-center">
-                  <h5 class="card-title">Loans Total</h5>
-                  <p class="card-text">$0.00</p>
+                  <h5 class="card-title">Savings Plan</h5>
+                  <p class="card-text">0</p>
                 </div>
               </div>
             </div>
@@ -254,73 +254,7 @@
         const user = JSON.parse(localStorage.getItem("user"));
         const coopData = JSON.parse(localStorage.getItem("coop"));
         // console.log(coopData);
-        if (!coopData) {
-          alert("no cooperative is selected");
-          // windows.location.href = "members-payment-paypal";
-        } else {
-          if (
-            coopData &&
-            coopData.subscription.membership_status == "not subscribed"
-          ) {
-            alert("not yet subscribed");
-            // windows.location.href = "members-payment-paypal";
-            window.location.href = "/members-payment-paypal";
-          } else {
-            document.getElementById(
-              "showTitle"
-            ).innerHTML = `<b>${coopData.coopData.cooperativename}</b>(${user.user.fullname})`;
-          }
-        }
-        const staff_id =
-          user && user.user && user.user.staff_id ? user.user.staff_id : "";
-
-        if (staff_id) {
-          const myHeaders = new Headers();
-          myHeaders.append("Content-Type", "application/json");
-
-          const raw = JSON.stringify({
-            staff_id: staff_id,
-          });
-
-          const requestOptions = {
-            method: "POST",
-            headers: myHeaders,
-            body: raw,
-            redirect: "follow",
-          };
-
-          fetch("http://localhost:5000/members/coop", requestOptions)
-            .then((response) => response.json())
-            .then((result) => {
-              storedCoopData = result;
-              const coopSelect = document.getElementById("coopSelect");
-              coopSelect.innerHTML = `<option selected>Select Coop</option>`;
-              result.forEach((coop) => {
-                const option = document.createElement("option");
-                option.value = coop.coopData.coop_id;
-                option.textContent = coop.coopData.cooperativename;
-                coopSelect.appendChild(option);
-              });
-            })
-            .catch((error) => {
-              console.error("Error:", error);
-              var errorModal = new bootstrap.Modal(
-                document.getElementById("errorModal")
-              );
-              errorModal.show();
-            });
-        } else {
-          alert("Staff ID not found in local storage");
-        }
       });
-      function selectCoopData(coop_id) {
-        const index = storedCoopData.findIndex(
-          (item) => item.coopData.coop_id === coop_id
-        );
-        localStorage.setItem("coop", JSON.stringify(storedCoopData[index]));
-        // console.log(storedCoopData[index]);
-        window.location.reload();
-      }
     </script>
   </body>
 </html>
