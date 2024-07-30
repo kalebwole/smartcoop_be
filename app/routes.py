@@ -1,6 +1,6 @@
 
 from flask import Blueprint, request, jsonify, render_template, current_app
-from .services import fetchLoan,getCoopProfiles,insert_cooperative, verify_credentials, create_member, fetch_all_members, delete_member, create_loan_type,delete_loan_type,fetch_loan_types, loanCalculator,createLoan, fetch_loans,update_loans, create_savings_type, fetch_savings_types, newSavings,fetch_savings,getProfiles,updateCoopProfiles,fetchAllloans, createtransactions,repayLoan,fetch_announcement,searchUsers,getUserCooptives,subscribeMember,savingsPlan,getsavingsPlan,getTransactions
+from .services import fetchLoan,getCoopProfiles,insert_cooperative, verify_credentials, create_member, fetch_all_members, delete_member, create_loan_type,delete_loan_type,fetch_loan_types, loanCalculator,createLoan, fetch_loans,update_loans, create_savings_type, fetch_savings_types, newSavings,fetch_savings,getProfiles,updateCoopProfiles,fetchAllloans, createtransactions,repayLoan,fetch_announcement,searchUsers,getUserCooptives,subscribeMember,savingsPlan,getsavingsPlan,getTransactions,fetch_loans_user
 
 import random
 from .crypt import encrypt_text, decrypt_text
@@ -16,6 +16,15 @@ main_bp = Blueprint('main', __name__)
 @main_bp.route('/', methods=['GET'])
 def hello():
     return render_template('default.html')
+@main_bp.route('/verify-coop', methods=['GET'])
+def verifycoop():
+    return render_template('verify-coop.html')
+@main_bp.route('/loan-details', methods=['GET'])
+def loanDetails():
+    return render_template('loandetails.html')
+@main_bp.route('/membersreports', methods=['GET'])
+def membersReports():
+    return render_template('membersreports.html')
 @main_bp.route('/memberssavings', methods=['GET'])
 def membersavings():
     return render_template('memberssavings.html')
@@ -388,7 +397,7 @@ def apply_loan():
     
     # print(data)
     # # per_page = data.get('per_page')
-   
+    # return data
     if not all([loanType, principal, tenure]):
         return jsonify({"error": "Missing required fields"}), 400
     
@@ -436,6 +445,25 @@ def get_loans():
 
     try:
         result = fetch_loans(coop_id,page,per_page)
+        return jsonify(result), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@main_bp.route('/cooperative/loans/user', methods=['POST'])
+def get_loans_user():
+    data = request.get_json()
+    
+    coop_id = data.get('coop_id')
+    staff_id = data.get('staff_id')
+    page = data.get('page')
+    per_page = data.get('per_page')
+   
+    if not all([coop_id, page, per_page,staff_id]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        result = fetch_loans_user(coop_id,staff_id,page,per_page)
         return jsonify(result), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500

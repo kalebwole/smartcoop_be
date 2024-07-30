@@ -98,7 +98,7 @@
                   data-aos-delay="300"
                   data-aos-once="true"
                 >
-                  Manage your cooperative seamlessly<br
+                  Let's Verify the OTP sent to your email<br
                     class="d-none d-lg-block"
                   />
                 </p>
@@ -118,67 +118,24 @@
                   data-aos-once="true"
                 >
                   <form id="signup-form">
+ 
                     <div class="form-floating">
                       <input
                         class="form-control"
-                        type="text"
-                        placeholder="Your Name"
-                        id="cooperativeName"
+                        type="otp"
+                        placeholder="Your OTP"
+                        id="otp"
                         required
                       />
-                      <label for="cooperativeName">Cooperative Name</label>
+                      <label for="email">Your OTP</label>
                     </div>
-                    <div class="form-floating">
-                      <input
-                        class="form-control"
-                        type="email"
-                        placeholder="Your Email"
-                        id="email"
-                        required
-                      />
-                      <label for="email">Your Email</label>
-                    </div>
-                    <div class="form-floating">
-                      <input
-                        class="form-control"
-                        type="password"
-                        placeholder="Your Password"
-                        id="password"
-                        required
-                      />
-                      <label for="password">Your Password</label>
-                    </div>
-                    <div class="form-floating">
-                      <input
-                        class="form-control"
-                        type="password"
-                        placeholder="Confirm Your Password"
-                        id="confirmPassword"
-                        required
-                      />
-                      <label for="confirmPassword">Confirm Your Password</label>
-                    </div>
-                    <div class="form-check d-flex align-items-center mt-6 mb-3">
-                      <input
-                        class="form-check-input bg-white float-none mt-0 mb-0"
-                        type="checkbox"
-                        value=""
-                        id="flexCheckDefault"
-                        required
-                      />
-                      <label class="form-check-label" for="flexCheckDefault"
-                        >I agree to all the statements included in<a
-                          class="btn-link--2 text-electric-violet-2 ms-1"
-                          href="/terms-page.html"
-                          >privacy policy</a
-                        ></label
-                      >
-                    </div>
+  
+              
                     <button
                       class="btn btn-primary shadow--primary-5 btn--lg-2 rounded-55 text-white mt-2"
                       type="submit"
                     >
-                      Sign Up
+                      Verify OTP
                     </button>
                   </form>
                 </div>
@@ -221,43 +178,29 @@
         .addEventListener("submit", async function (event) {
           event.preventDefault();
 
-          const cooperativeName =
-            document.getElementById("cooperativeName").value;
-          const email = document.getElementById("email").value;
-          const password = document.getElementById("password").value;
-          const confirmPassword =
-            document.getElementById("confirmPassword").value;
+          const urlParams = new URLSearchParams(window.location.search);
+          const email = urlParams.get('email'); 
+          const otp = document.getElementById("otp").value;
+          const getOTP =  localStorage.getItem('encryptedOtp');
 
-          if (password !== confirmPassword) {
-            Toastify({
-              text: "Passwords do not match!",
-              backgroundColor: "linear-gradient(to right, #FF5F6D, #FFC371)",
-              duration: 3000,
-            }).showToast();
-            return;
-          }
-
+    
           const data = {
-            cooperativename: cooperativeName,
-            email: email,
-            password: password,
-          };
-          localStorage.setItem("tempUser",JSON.stringify(data))
-          const datas = {
-            
+             
+           otp:otp,
+            encryptedotp:getOTP,
             email: email,
            
           };
-
+          console.log(data)
           try {
             const response = await fetch(
-              "http://localhost:5000/send-otp",
+              "http://localhost:5000/verify-otp",
               {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify(datas),
+                body: JSON.stringify(data),
               }
             );
 
@@ -266,15 +209,50 @@
             }
 
             const result = await response.json();
-            console.log(result.OTP);
-            localStorage.setItem('encryptedOtp', result.OTP);
+            // console.log(result);
+            localStorage.setItem('encryptedOtp', response.OTP);
+
+            const getTemp = JSON.parse(localStorage.getItem("tempUser"));
+             try {
+            const response = await fetch(
+              "http://127.0.0.1:5000/cooperative/signup",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(getTemp),
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log(result);
             Toastify({
-              text: "OTP Sent !",
+              text: "Signup successful!",
+              backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+              duration: 3000,
+            }).showToast();
+          } catch (error) {
+            console.error("Error:", error);
+            Toastify({
+              text: "An error occurred during signup. Please try again later.",
+              backgroundColor: "linear-gradient(to right, #FF5F6D, #FFC371)",
+              duration: 3000,
+            }).showToast();
+          }
+
+
+            Toastify({
+              text: "OTP Verified!",
               backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
               duration: 3000,
             }).showToast();
             setTimeout(() => {
-              window.location.href="verify-coop?email="+email 
+              window.location.href="/sign-in"
             //   location.reload();
             }, 3000);
           } catch (error) {
@@ -285,37 +263,6 @@
               duration: 3000,
             }).showToast();
           }
-          // try {
-          //   const response = await fetch(
-          //     "http://127.0.0.1:5000/cooperative/signup",
-          //     {
-          //       method: "POST",
-          //       headers: {
-          //         "Content-Type": "application/json",
-          //       },
-          //       body: JSON.stringify(data),
-          //     }
-          //   );
-
-          //   if (!response.ok) {
-          //     throw new Error(`HTTP error! status: ${response.status}`);
-          //   }
-
-          //   const result = await response.json();
-          //   console.log(result);
-          //   Toastify({
-          //     text: "Signup successful!",
-          //     backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
-          //     duration: 3000,
-          //   }).showToast();
-          // } catch (error) {
-          //   console.error("Error:", error);
-          //   Toastify({
-          //     text: "An error occurred during signup. Please try again later.",
-          //     backgroundColor: "linear-gradient(to right, #FF5F6D, #FFC371)",
-          //     duration: 3000,
-          //   }).showToast();
-          // }
         });
     </script>
   </body>

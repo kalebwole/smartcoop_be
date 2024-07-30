@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Transaction Report</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <style>
+      .container {
+        max-width: 1200px;
+      }
+      .table {
+        margin-bottom: 0;
+      }
+    </style>
+    <style>
+      body {
+        padding-bottom: 60px;
+      }
+      .navbar-bottom {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        z-index: 1000;
+      }
+      .btn-small {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h1>Transaction Report</h1>
+      <div class="form-row mb-3">
+        <div class="col">
+          <label for="dateFilter">Date Filter</label>
+          <select id="dateFilter" class="form-control">
+            <option value="all">All</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+            <option value="three_months">Last 3 Months</option>
+            <option value="six_months">Last 6 Months</option>
+            <option value="year">This Year</option>
+          </select>
+        </div>
+        <div class="col">
+          <label for="transactionTypeFilter">Transaction Type</label>
+          <select id="transactionTypeFilter" class="form-control">
+            <option value="all">All</option>
+            <option value="credit">Credit</option>
+            <option value="debit">Debit</option>
+          </select>
+        </div>
+        <div class="col">
+          <label for="typeFilter">Type</label>
+          <select id="typeFilter" class="form-control">
+            <option value="all">All</option>
+            <option value="savings">Savings</option>
+            <option value="loan">Loan</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <h3>Credits</h3>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody id="creditsTableBody"></tbody>
+            <tfoot>
+              <tr>
+                <td colspan="2">Total Credits</td>
+                <td id="totalCredits">0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div class="col-md-6">
+          <h3>Debits</h3>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody id="debitsTableBody"></tbody>
+            <tfoot>
+              <tr>
+                <td colspan="2">Total Debits</td>
+                <td id="totalDebits">0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+    <nav class="navbar navbar-dark bg-dark navbar-bottom">
+      <div class="container d-flex justify-content-around">
+        <a class="navbar-brand" href="/members">
+          <i class="bi bi-house-door"></i>
+          <span class="d-block">Home</span>
+        </a>
+        <a class="navbar-brand" href="/memberssavings">
+          <i class="bi bi-bar-chart"></i>
+          <span class="d-block">Savings</span>
+        </a>
+        <a class="navbar-brand" href="/membersloans">
+          <i class="bi bi-person"></i>
+          <span class="d-block">Loans</span>
+        </a>
+        <a class="navbar-brand" href="/membersreports">
+          <i class="bi bi-gear"></i>
+          <span class="d-block">Reports</span>
+        </a>
+        <a class="navbar-brand" href="/memberslogout">
+          <i class="bi bi-gear"></i>
+          <span class="d-block">Log Out</span>
+        </a>
+      </div>
+    </nav>
+    <script>
+      const transactionsEndpoint = "http://localhost:5000/transactions";
+      const payload = {
+        staff_id: "1234",
+        coop_id: "d50544f7ec",
+        type: "all",
+      };
+
+      let allTransactions = [];
+
+      document.addEventListener("DOMContentLoaded", () => {
+        fetchTransactions();
+        document
+          .getElementById("dateFilter")
+          .addEventListener("change", filterTransactions);
+        document
+          .getElementById("transactionTypeFilter")
+          .addEventListener("change", filterTransactions);
+        document
+          .getElementById("typeFilter")
+          .addEventListener("change", filterTransactions);
+      });
+
+      async function fetchTransactions() {
+        const response = await fetch(transactionsEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+        allTransactions = await response.json();
+        filterTransactions();
+      }
+
+      function renderTransactions(transactions) {
+        const creditsTableBody = document.getElementById("creditsTableBody");
+        const debitsTableBody = document.getElementById("debitsTableBody");
+        let totalCredits = 0;
+        let totalDebits = 0;
+
+        creditsTableBody.innerHTML = "";
+        debitsTableBody.innerHTML = "";
+
+        transactions.forEach((transaction) => {
+          const row = `<tr>
+                    <td>${transaction.amount}</td>
+                    <td>${new Date(
+                      transaction.date_added
+                    ).toLocaleDateString()}</td>
+                    <td>${transaction.type}</td>
+                </tr>`;
+
+          if (transaction.transaction_type === "credit") {
+            creditsTableBody.innerHTML += row;
+            totalCredits += parseFloat(transaction.amount);
+          } else {
+            debitsTableBody.innerHTML += row;
+            totalDebits += parseFloat(transaction.amount);
+          }
+        });
+
+        document.getElementById("totalCredits").textContent = totalCredits;
+        document.getElementById("totalDebits").textContent = totalDebits;
+      }
+
+      function filterTransactions() {
+        const dateFilter = document.getElementById("dateFilter").value;
+        const transactionTypeFilter = document.getElementById(
+          "transactionTypeFilter"
+        ).value;
+        const typeFilter = document.getElementById("typeFilter").value;
+
+        let filteredTransactions = allTransactions;
+
+        // Apply date filter
+        const now = new Date();
+        switch (dateFilter) {
+          case "week":
+            filteredTransactions = filteredTransactions.filter(
+              (transaction) => {
+                const date = new Date(transaction.date_added);
+                const weekAgo = new Date(now);
+                weekAgo.setDate(now.getDate() - 7);
+                return date >= weekAgo;
+              }
+            );
+            break;
+          case "month":
+            filteredTransactions = filteredTransactions.filter(
+              (transaction) => {
+                const date = new Date(transaction.date_added);
+                return (
+                  date.getMonth() === now.getMonth() &&
+                  date.getFullYear() === now.getFullYear()
+                );
+              }
+            );
+            break;
+          case "three_months":
+            filteredTransactions = filteredTransactions.filter(
+              (transaction) => {
+                const date = new Date(transaction.date_added);
+                const threeMonthsAgo = new Date(now);
+                threeMonthsAgo.setMonth(now.getMonth() - 3);
+                return date >= threeMonthsAgo;
+              }
+            );
+            break;
+          case "six_months":
+            filteredTransactions = filteredTransactions.filter(
+              (transaction) => {
+                const date = new Date(transaction.date_added);
+                const sixMonthsAgo = new Date(now);
+                sixMonthsAgo.setMonth(now.getMonth() - 6);
+                return date >= sixMonthsAgo;
+              }
+            );
+            break;
+          case "year":
+            filteredTransactions = filteredTransactions.filter(
+              (transaction) => {
+                const date = new Date(transaction.date_added);
+                return date.getFullYear() === now.getFullYear();
+              }
+            );
+            break;
+        }
+
+        // Apply transaction type filter
+        if (transactionTypeFilter !== "all") {
+          filteredTransactions = filteredTransactions.filter(
+            (transaction) =>
+              transaction.transaction_type === transactionTypeFilter
+          );
+        }
+
+        // Apply type filter
+        if (typeFilter !== "all") {
+          filteredTransactions = filteredTransactions.filter(
+            (transaction) => transaction.type === typeFilter
+          );
+        }
+
+        renderTransactions(filteredTransactions);
+      }
+    </script>
+  </body>
+</html>

@@ -373,6 +373,43 @@ def fetch_loans(coop_id, page=1, per_page=10):
         print(f"Error fetching loan types: {e}")
         return []
 
+def fetch_loans_user(coop_id, staff_id,page=1, per_page=10):
+     
+    db = current_app.db
+    
+    
+    offset = (page - 1) * per_page
+    
+    print(staff_id)
+    
+    query = """
+    SELECT * FROM loan_application 
+    WHERE coop_id = %s and staff_id = %s
+    LIMIT %s OFFSET %s
+    """
+    # return staff_id
+    params = (coop_id,staff_id, per_page, offset,)
+    # print(coop_id)  
+    try:
+        loan_types = db.read(query, params)
+        response = []
+        for eached in loan_types:
+
+            newQuery = """
+            SELECT * FROM coop_loantypes 
+            WHERE id = %s
+            """
+            print(eached['loan_type'])
+            # return staff_id
+            paramsd = (str(eached['loan_type']),)
+            loanTp = db.read(newQuery, paramsd)
+            response.append({"loans":eached,"typeData":loanTp[0]})
+        return response
+    except Exception as e:
+        print(f"Error fetching loan types: {e}")
+        return []
+
+
 def fetchAllloans(coop_id):
      
     db = current_app.db
@@ -854,12 +891,21 @@ def getsavingsPlan(staff_id,coop_id):
 def getTransactions(coop_id,staff_id,type):
         try:
             db = current_app.db
-            query = """
+            if(type=="all"):
+                query = """
+                    SELECT * FROM transactions WHERE coop_id = %s and staff_id = %s   
+
+                                        """
+                params = (coop_id,staff_id,)
+                result = db.read(query,params)
+                return result
+            else:
+                query = """
                     SELECT * FROM transactions WHERE coop_id = %s and staff_id = %s and type=%s  
                     """
-            params = (coop_id,staff_id,type,)
-            result = db.read(query,params)
-            return result
+                params = (coop_id,staff_id,type,)
+                result = db.read(query,params)
+                return result
         except Exception as e:
             return []
 

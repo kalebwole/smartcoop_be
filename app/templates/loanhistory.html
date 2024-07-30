@@ -193,12 +193,12 @@
       event.preventDefault();
 
       const formData = new FormData(repayForm);
-      const data = {};
-      formData.forEach((value, key) => {
-        data[key] = value;
-      });
+      const data = {
+        loan_id: document.getElementById("repayLoanId").value,
+        amount: document.getElementById("amountToRepay").value,
+      };
 
-      fetch("http://localhost:5000/repay", {
+      fetch("http://localhost:5000/cooperative/loan/repay", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
