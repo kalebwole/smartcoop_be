@@ -812,7 +812,7 @@ def getUserCooptives(staff_id):
 
         response = []
         for each in getCoops:
-             
+             print(each)
              getCoopData = """
                 SELECT * FROM cooperative WHERE coop_id = %s 
                         """
@@ -820,7 +820,7 @@ def getUserCooptives(staff_id):
              coopsData = db.read(getCoopData,getParamscoopsdata)
              response.append({"coopData":coopsData[0],"subscription":each})
 
-             
+        print (len(response))    
         return response
             
 

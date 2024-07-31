@@ -78,7 +78,7 @@
             >
               <div
                 class="form-img position-absolute bg-image"
-                style="background-image: url({{ url_for('static', filename='image/jpg/sign-in.jpg') }})"
+                style="background-image: url({{ url_for('static', filename='image/emoji.avif') }})"
               ></div>
             </div>
             <div class="col-xxl-5 col-xl-6 col-lg-7 col-md-8 col-xs-10">
@@ -228,6 +228,8 @@
             console.log(result);
 
             // Store the response in local storage
+            localStorage.removeItem("user");
+            localStorage.removeItem("coop");
             localStorage.setItem("user", JSON.stringify(result));
 
             Toastify({

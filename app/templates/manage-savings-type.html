@@ -50,7 +50,9 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="addLoanTypeModalLabel">Add Loan Type</h5>
+          <h5 class="modal-title" id="addLoanTypeModalLabel">
+            Add Savings Type
+          </h5>
           <button
             type="button"
             class="close"
@@ -94,8 +96,8 @@
     const coopId = "d50544f7ec";
     const perPage = 10;
     const page = 1;
-
-    fetchLoanTypes(coopId, perPage, page);
+    const user = JSON.parse(localStorage.getItem("user"));
+    fetchLoanTypes(user.user.coop_id, perPage, page);
 
     const form = document.getElementById("addLoanTypeForm");
     form.addEventListener("submit", (event) => {
@@ -190,10 +192,11 @@
         // Show success alert
         showAlert("Loan type deleted successfully", "alert-success");
         // Refresh the loan type list
-        const coopId = "d50544f7ec"; // Use your actual coop_id
+        const user = JSON.parse(localStorage.getItem("user"));
+        // const coopId = "d50544f7ec"; // Use your actual coop_id
         const perPage = 10;
         const page = 1;
-        fetchLoanTypes(coopId, perPage, page);
+        fetchLoanTypes(user.user.coop_id, perPage, page);
       })
       .catch((error) => {
         console.error("Error:", error);
