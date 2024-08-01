@@ -11,7 +11,7 @@ def create_app():
     app.config['DB_USER'] = 'root'
     app.config['DB_PASSWORD'] = '@Samclem91'
     
-    app.config['DB_NAME'] = 'smartscoop'
+    app.config['DB_NAME'] = 'smartcoop'
 
     # Initialize database connection
     app.db = Database(
