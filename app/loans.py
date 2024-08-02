@@ -33,7 +33,7 @@ def straight_line_loan_schedule(principal, tenure_months, annual_interest_rate):
             currentRepayment = monthly_principal_repayment
         schedule.append({
             "month": month,
-            "monthly_repayment": round(currentRepayment, 2),
+            "monthly_repayment": round((currentRepayment + currentInterest), 2),
             "monthly_principal_repayment": round(currentRepayment, 2),
             "monthly_interest_repayment": round(currentInterest, 2),
             "remaining_principal": round(remaining_principal, 2),
@@ -107,7 +107,7 @@ def reducingBalance_loan_schedule(principal, tenure_months, annual_interest_rate
             remaining_principal = remaining_principal - monthlyRepayment
         schedule.append({
             "month": month,
-            "monthly_repayment": round(currenttotalrepayment, 2),
+            "monthly_repayment": round((currenttotalrepayment + interest), 2),
             "monthly_principal_repayment": round(currentrepayment, 2),
             "monthly_interest_repayment": round(interest, 2),
             "remaining_principal": round(remaining_principal, 2),
