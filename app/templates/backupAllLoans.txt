@@ -1,4 +1,7 @@
 {% include 'includes/header.html' %}
+<script>
+  const currentURL = window.location.origin;
+</script>
 <div class="content">
   <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center">
@@ -122,7 +125,7 @@
       const user = JSON.parse(localStorage.getItem("user"));
       const coop_id = user ? user.user.coop_id : "";
 
-      fetch("http://localhost:5000/cooperative/loans", {
+      fetch(`${currentURL}/cooperative/loans", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -181,7 +184,7 @@
       const user = JSON.parse(localStorage.getItem("user"));
       const coop_id = user ? user.user.coop_id : "";
 
-      fetch("http://localhost:5000/cooperative/loantype", {
+      fetch(`${currentURL}/cooperative/loantype", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -231,7 +234,7 @@
         return;
       }
 
-      fetch("http://localhost:5000/cooperative/loan/apply", {
+      fetch(`${currentURL}/cooperative/loan/apply", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -269,7 +272,7 @@
   });
 
   function deleteLoan(id) {
-    fetch("http://localhost:5000/cooperative/loan/delete", {
+    fetch(`${currentURL}/cooperative/loan/delete", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -296,7 +299,7 @@
       type: "approved",
     };
 
-    fetch("http://localhost:5000/cooperative/approval", {
+    fetch(`${currentURL}/cooperative/approval", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -323,7 +326,7 @@
       type: "reject",
     };
 
-    fetch("http://localhost:5000/cooperative/approval", {
+    fetch(`${currentURL}/cooperative/approval", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

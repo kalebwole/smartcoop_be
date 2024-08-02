@@ -1,4 +1,7 @@
 {% include 'includes/header.html' %}
+<script>
+  const currentURL = window.location.origin;
+</script>
 <div class="content">
   <div class="container mt-4">
     <h1>Loan Calculator</h1>
@@ -59,7 +62,7 @@
       const coop_id = user ? user.user.coop_id : "";
 
       // Fetch loan types and populate dropdown
-      fetch("http://localhost:5000/cooperative/loantype", {
+      fetch(`${currentURL}/cooperative/loantype`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -89,7 +92,7 @@
         const tenure = document.getElementById("tenure").value;
         const loanTypeId = document.getElementById("loanType").value;
 
-        fetch("http://localhost:5000/cooperative/loan/calculator", {
+        fetch(`${currentURL}/cooperative/loan/calculator`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -106,7 +109,7 @@
             schedule.forEach((monthly) => {
               const row = document.createElement("tr");
               row.innerHTML = `
-              <td>${(monthly.month) - 1}</td>
+              <td>${monthly.month - 1}</td>
               <td>${monthly.monthly_principal_repayment}</td>
               <td>${monthly.monthly_interest_repayment}</td>
               <td>${monthly.monthly_repayment}</td>

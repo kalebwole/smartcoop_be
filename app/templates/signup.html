@@ -58,6 +58,11 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
     />
+      <script>
+      const currentURL = window.location.origin;
+
+       
+    </script>
   </head>
 
   <body data-theme-mode-panel-active data-theme="light">
@@ -251,7 +256,7 @@
 
           try {
             const response = await fetch(
-              "http://localhost:5000/send-otp",
+              `${currentURL}/send-otp`,
               {
                 method: "POST",
                 headers: {

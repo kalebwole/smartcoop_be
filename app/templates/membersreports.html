@@ -33,6 +33,9 @@
         padding: 0.25rem 0.5rem;
       }
     </style>
+    <script>
+      const currentURL = window.location.origin;
+    </script>
   </head>
   <body>
     <div class="container mt-5">
@@ -133,7 +136,7 @@
       </div>
     </nav>
     <script>
-      const transactionsEndpoint = "http://localhost:5000/transactions";
+      const transactionsEndpoint = `${currentURL}/transactions`;
       const payload = {
         staff_id: "1234",
         coop_id: "d50544f7ec",

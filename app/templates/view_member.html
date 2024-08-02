@@ -1,4 +1,7 @@
 {% include 'includes/header.html' %}
+<script>
+  const currentURL = window.location.origin;
+</script>
 
 <div class="content">
   <script src="./js/custom/view_member.js"></script>
@@ -39,7 +42,7 @@
       if (user && user.user.coop_id) {
         const coop_id = user.user.coop_id;
 
-        fetch("http://localhost:5000/cooperative/members", {
+        fetch(`${currentURL}/cooperative/members`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

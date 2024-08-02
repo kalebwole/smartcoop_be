@@ -58,6 +58,9 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
     />
+    <script>
+      const currentURL = window.location.origin;
+    </script>
   </head>
   <body data-theme-mode-panel-active data-theme="light">
     <div class="site-wrapper overflow-hidden">
@@ -369,7 +372,7 @@
           } else {
             try {
               const response = await fetch(
-                "http://localhost:5000/cooperative/members/create",
+                `${currentURL}/cooperative/members/create`,
                 {
                   method: "POST",
                   headers: {

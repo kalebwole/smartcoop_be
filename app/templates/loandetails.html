@@ -59,6 +59,9 @@
       }
     </style>
     <script src="https://www.paypal.com/sdk/js?client-id=AfhwU0miSQdsbgBWf9-sHXmB7e7P8LAa3SaiH8L7q8xRQ7MpbBIltH1GUnkBZzOdZ3ILk4gxUDvl69R-&components=buttons,hosted-fields"></script>
+    <script>
+      const currentURL = window.location.origin;
+    </script>
   </head>
   <body>
     <div class="container mt-4">
@@ -199,7 +202,7 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const loanId = urlParams.get("loan_id");
 
-                fetch("http://localhost:5000/loandetails", {
+                fetch(`${currentURL}/loandetails`, {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
@@ -290,7 +293,7 @@
                 //   data[key] = value;
                 // });
 
-                fetch("http://localhost:5000/cooperative/loan/repay", {
+                fetch(`${currentURL}/cooperative/loan/repay`, {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
@@ -640,7 +643,7 @@
           redirect: "follow",
         };
 
-        fetch("http://localhost:5000/cooperative/loan/apply", requestOptions)
+        fetch(`${currentURL}/cooperative/loan/apply`, requestOptions)
           .then((response) => response.json())
           .then((result) => {
             window.location.reload();
@@ -676,7 +679,7 @@
           redirect: "follow",
         };
         let output = "";
-        fetch("http://localhost:5000/cooperative/loans/user", requestOptions)
+        fetch(`${currentURL}/cooperative/loans/user`, requestOptions)
           .then((response) => response.json())
           .then((result) => {
             let noOfActive = 0;
@@ -775,10 +778,7 @@
           redirect: "follow",
         };
 
-        fetch(
-          "http://localhost:5000/cooperative/loan/calculator",
-          requestOptions
-        )
+        fetch(`${currentURL}/cooperative/loan/calculator`, requestOptions)
           .then((response) => response.json())
           .then((result) => {
             populateLoanCalculationResult(result);
@@ -826,7 +826,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         // console.log(coopData);
         // coopSelect
-        fetch("http://localhost:5000/cooperative/loantype", {
+        fetch(`${currentURL}/cooperative/loantype`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

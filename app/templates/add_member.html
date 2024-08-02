@@ -1,5 +1,7 @@
 {% include 'includes/header.html' %}
-
+<script>
+  const currentURL = window.location.origin;
+</script>
 <div class="content">
   <div class="container mt-5">
     <h1>Add Member</h1>
@@ -181,7 +183,7 @@
     };
     // nok_name,nok_phone,nok_relationship,bank_name,account_number,sort_code,salary_number
     // Send POST request to the endpoint
-    fetch("http://localhost:5000/cooperative/members/create", {
+    fetch(`${currentURL}/cooperative/members/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

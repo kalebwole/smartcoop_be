@@ -1,4 +1,7 @@
 {% include 'includes/header.html' %}
+<script>
+  const currentURL = window.location.origin;
+</script>
 
 <div class="content container mt-4">
   <h2>Cooperative Form</h2>
@@ -164,7 +167,7 @@
 
     // Function to fetch cooperative profile data
     function fetchCooperativeProfile() {
-      var endpoint = "http://localhost:5000/cooporetive/profile";
+      var endpoint = `${currentURL}/cooporetive/profile`;
       const user = JSON.parse(localStorage.getItem("user"));
       const coop_id = user ? user.user.coop_id : "";
       var payload = { coop_id: coop_id };
@@ -222,7 +225,7 @@
           };
 
           // Send POST request to update endpoint
-          fetch("http://localhost:5000/cooporetive/profile/update", {
+          fetch(`${currentURL}/cooporetive/profile/update`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

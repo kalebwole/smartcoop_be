@@ -34,6 +34,9 @@
         }
       }
     </style>
+    <script>
+      const currentURL = window.location.origin;
+    </script>
   </head>
   <body>
     <div class="container">
@@ -88,10 +91,7 @@
           redirect: "follow",
         };
 
-        fetch(
-          "http://localhost:5000/cooperative/savings/create",
-          requestOptions
-        )
+        fetch(`${currentURL}/cooperative/savings/create`, requestOptions)
           .then((response) => response.text())
           .then((result) => (window.location.href = "/members"))
           .catch((error) => console.error(error));

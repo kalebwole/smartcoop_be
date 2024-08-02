@@ -1,4 +1,7 @@
 {% include 'includes/header.html' %}
+<script>
+  const currentURL = window.location.origin;
+</script>
 
 <div class="content">
   <script src="./js/custom/view_member.js"></script>
@@ -118,7 +121,7 @@
         return;
       }
 
-      fetch("http://localhost:5000/cooperative/savingstype/create", {
+      fetch(`${currentURL}/cooperative/savingstype/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -146,7 +149,7 @@
   });
 
   function fetchLoanTypes(coopId, perPage, page) {
-    fetch("http://localhost:5000/cooperative/savingstype", {
+    fetch(`${currentURL}/cooperative/savingstype`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -163,7 +166,7 @@
             <td>${loanType.id}</td>
             <td>${loanType.title}</td>
             <td>${loanType.auto_type}</td>
-      
+
             <td>
               <button class="btn btn-danger" onclick="deleteLoanType(${loanType.id})">
                 Delete
@@ -179,7 +182,7 @@
   }
 
   function deleteLoanType(id) {
-    fetch("http://localhost:5000/cooperative/loantype", {
+    fetch(`${currentURL}/cooperative/loantype`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

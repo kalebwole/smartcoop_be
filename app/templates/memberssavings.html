@@ -59,6 +59,9 @@
       }
     </style>
     <script src="https://www.paypal.com/sdk/js?client-id=AfhwU0miSQdsbgBWf9-sHXmB7e7P8LAa3SaiH8L7q8xRQ7MpbBIltH1GUnkBZzOdZ3ILk4gxUDvl69R-&components=buttons,hosted-fields"></script>
+    <script>
+      const currentURL = window.location.origin;
+    </script>
   </head>
   <body>
     <div class="container mt-4">
@@ -409,7 +412,7 @@
           redirect: "follow",
         };
         let output = "";
-        fetch("http://localhost:5000/transactions", requestOptions)
+        fetch(`${currentURL}/transactions`, requestOptions)
           .then((response) => response.json())
           .then((result) => {
             for (let item of result) {
@@ -500,10 +503,7 @@
           redirect: "follow",
         };
 
-        fetch(
-          "http://localhost:5000/members/savingsplan/create",
-          requestOptions
-        )
+        fetch(`${currentURL}/members/savingsplan/create`, requestOptions)
           .then((response) => response.json())
           .then((result) => {
             storedCoopData = result;
@@ -539,7 +539,7 @@
           redirect: "follow",
         };
 
-        fetch("http://localhost:5000/cooperative/savingstype", requestOptions)
+        fetch(`${currentURL}/cooperative/savingstype`, requestOptions)
           .then((response) => response.json())
           .then((result) => {
             storedCoopData = result;
@@ -572,10 +572,7 @@
           body: raw1,
           redirect: "follow",
         };
-        fetch(
-          "http://localhost:5000/members/savingsplan/fetch",
-          requestOptions1
-        )
+        fetch(`${currentURL}/members/savingsplan/fetch`, requestOptions1)
           .then((response) => response.json())
           .then((result) => {
             savingsPlanData = result;

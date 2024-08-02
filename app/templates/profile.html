@@ -1,4 +1,7 @@
 {% include 'includes/header.html' %}
+<script>
+  const currentURL = window.location.origin;
+</script>
 <style>
   .profile {
     display: flex;
@@ -93,7 +96,7 @@
     const userId = urlParams.get("user");
 
     // API endpoint
-    const apiEndpoint = "http://localhost:5000/profile";
+    const apiEndpoint = `${currentURL}/profile`;
 
     // Fetch profile data
     fetch(apiEndpoint, {

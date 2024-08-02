@@ -31,6 +31,9 @@
       }
     </style>
     <script src="https://www.paypal.com/sdk/js?client-id=AfhwU0miSQdsbgBWf9-sHXmB7e7P8LAa3SaiH8L7q8xRQ7MpbBIltH1GUnkBZzOdZ3ILk4gxUDvl69R-&components=buttons,hosted-fields"></script>
+    <script>
+      const currentURL = window.location.origin;
+    </script>
   </head>
   <body>
     <div class="container mt-4">
@@ -292,7 +295,7 @@
             redirect: "follow",
           };
 
-          fetch("http://localhost:5000/members/coop", requestOptions)
+          fetch(`${currentURL}/members/coop`, requestOptions)
             .then((response) => response.json())
             .then((result) => {
               storedCoopData = result;

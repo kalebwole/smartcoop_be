@@ -1,4 +1,7 @@
 {% include 'includes/header.html' %}
+<script>
+  const currentURL = window.location.origin;
+</script>
 
 <div class="content">
   <h1>
@@ -122,7 +125,7 @@
   };
 
   // Making the POST request using fetch
-  fetch("http://localhost:5000/cooperative/members", requestOptions)
+  fetch(`${currentURL}/cooperative/members`, requestOptions)
     .then((response) => response.json())
     .then((data) => {
       // Handle the response data
@@ -149,7 +152,7 @@
   };
 
   // Making the POST request using fetch
-  fetch("http://localhost:5000/cooperative/loans", requestOptions1)
+  fetch(`${currentURL}/cooperative/loans`, requestOptions1)
     .then((response) => response.json())
     .then((data) => {
       let totalLoan = 0;
@@ -219,7 +222,7 @@
   };
 
   // Making the POST request using fetch
-  fetch("http://localhost:5000/cooperative/savings", requestOptions2)
+  fetch(`${currentURL}/cooperative/savings`, requestOptions2)
     .then((response) => response.json())
     .then((data) => {
       let totalSavings = 0;
@@ -250,7 +253,7 @@
     }),
   };
 
-  fetch("http://localhost:5000/cooperative/annoucement", requestOptions3)
+  fetch(`${currentURL}/cooperative/annoucement`, requestOptions3)
     .then((response) => response.json())
     .then((data) => {
       let announce = "";
@@ -282,7 +285,7 @@
     }),
   };
 
-  fetch("http://localhost:5000/cooporetive/profile", requestOptions4)
+  fetch(`${currentURL}/cooporetive/profile`, requestOptions4)
     .then((response) => response.json())
     .then((data) => {
       console.log(data.coop);
